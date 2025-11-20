@@ -5,7 +5,7 @@ Version: 0.1.0
 Date: 2025-11-20
 Authors@R: c(
     person("Priyanshu", "Tiwari",
-           email = "priyanshu.tiwari@example.com",
+           email = "tiwari.priyanshu.iitk@gmail.com",
            role = c("aut", "cre"))
     )
 Description: Implements binomial tree pricing for geometric and arithmetic
