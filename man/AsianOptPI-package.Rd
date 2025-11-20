@@ -9,7 +9,7 @@
 Implements binomial tree pricing for geometric and arithmetic Asian options incorporating market price impact from hedging activities. Uses the Cox-Ross-Rubinstein (CRR) model with the replicating portfolio method. Provides exact pricing for geometric Asian options and bounds for arithmetic Asian options based on Jensen's inequality. The price impact mechanism models how hedging volumes affect stock prices, leading to modified risk-neutral probabilities. References: Cox, Ross & Rubinstein (1979) \doi{10.1016/0304-405X(79)90015-1}.
 }
 \author{
-\strong{Maintainer}: Priyanshu Tiwari \email{priyanshu.tiwari@example.com}
+\strong{Maintainer}: Priyanshu Tiwari \email{tiwari.priyanshu.iitk@gmail.com}
 
 }
 \keyword{internal}
