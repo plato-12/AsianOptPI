@@ -6,7 +6,106 @@
 \alias{AsianOptPI-package}
 \title{AsianOptPI: Asian Option Pricing with Price Impact}
 \description{
-Implements binomial tree pricing for geometric and arithmetic Asian options incorporating market price impact from hedging activities. Uses the Cox-Ross-Rubinstein (CRR) model with the replicating portfolio method. Provides exact pricing for geometric Asian options and bounds for arithmetic Asian options based on Jensen's inequality. The price impact mechanism models how hedging volumes affect stock prices, leading to modified risk-neutral probabilities. References: Cox, Ross & Rubinstein (1979) \doi{10.1016/0304-405X(79)90015-1}.
+Implements binomial tree pricing for geometric and arithmetic Asian options
+incorporating market price impact from hedging activities. Uses the
+Cox-Ross-Rubinstein (CRR) model with the replicating portfolio method.
+}
+\section{Main Functions}{
+
+\itemize{
+\item \code{\link{price_geometric_asian}}: Exact pricing for geometric Asian calls
+\item \code{\link{arithmetic_asian_bounds}}: Bounds for arithmetic Asian calls
+\item \code{\link{compute_p_eff}}: Compute effective risk-neutral probability
+\item \code{\link{compute_effective_factors}}: Compute modified up/down factors
+\item \code{\link{check_no_arbitrage}}: Validate no-arbitrage condition
+}
+}
+
+\section{Price Impact Mechanism}{
+
+When market makers hedge options, their trading volume causes price movements:
+\deqn{\Delta S = \lambda \cdot v \cdot \text{sign}(\text{trade})}
+
+This modifies the binomial tree dynamics:
+\itemize{
+\item Effective up move: \eqn{S \to S \cdot u \cdot e^{\lambda v^u}}
+\item Effective down move: \eqn{S \to S \cdot d \cdot e^{-\lambda v^d}}
+\item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+}
+}
+
+\section{Mathematical Framework}{
+
+The package uses the replicating portfolio approach where the option value
+equals the cost of constructing a portfolio that replicates its payoff:
+\deqn{V = \Delta \cdot S + B}
+
+This leads to the risk-neutral pricing formula:
+\deqn{V = \frac{1}{r^n} \mathbb{E}^Q[\text{Payoff}]}
+
+For geometric Asian options, the payoff is:
+\deqn{V_n = \max(0, G_n - K)}
+where \eqn{G_n = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}} is the geometric average.
+
+For arithmetic Asian options, bounds are computed using Jensen's inequality:
+\deqn{V_0^G \leq V_0^A \leq V_0^G + \frac{(\rho^* - 1)}{r^n} \mathbb{E}^Q[G_n]}
+where \eqn{\rho^* = \exp\left[\frac{(\tilde{u}^n - \tilde{d}^n)^2}{4\tilde{u}^n\tilde{d}^n}\right]}
+}
+
+\section{No-Arbitrage Condition}{
+
+For valid pricing, the model requires:
+\deqn{\tilde{d} < r < \tilde{u}}
+This ensures the effective risk-neutral probability \eqn{p^{eff} \in [0,1]}.
+All pricing functions validate this condition automatically.
+}
+
+\section{Computational Complexity}{
+
+The implementation enumerates all \eqn{2^n} possible price paths:
+\itemize{
+\item \eqn{n \leq 15}: Fast (< 1 second)
+\item \eqn{n = 20}: ~1 million paths (~10 seconds)
+\item \eqn{n > 20}: Warning issued automatically
+}
+}
+
+\examples{
+# Price geometric Asian option with price impact
+price_geometric_asian(
+  S0 = 100, K = 100, r = 1.05,
+  u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1,
+  n = 3
+)
+
+# Compute bounds for arithmetic Asian option
+bounds <- arithmetic_asian_bounds(
+  S0 = 100, K = 100, r = 1.05,
+  u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1,
+  n = 3
+)
+print(bounds)
+
+# Check no-arbitrage condition
+check_no_arbitrage(r = 1.05, u = 1.2, d = 0.8,
+                   lambda = 0.1, v_u = 1, v_d = 1)
+
+# Compute effective factors
+factors <- compute_effective_factors(u = 1.2, d = 0.8,
+                                     lambda = 0.1, v_u = 1, v_d = 1)
+print(factors)
+}
+\references{
+Cox, J. C., Ross, S. A., & Rubinstein, M. (1979).
+Option pricing: A simplified approach.
+\emph{Journal of Financial Economics}, 7(3), 229-263.
+
+Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
+Further reverse results for Jensen's discrete inequality and
+applications in information theory.
+\emph{Journal of Inequalities in Pure and Applied Mathematics}, 2(1).
 }
 \author{
 \strong{Maintainer}: Priyanshu Tiwari \email{tiwari.priyanshu.iitk@gmail.com}
