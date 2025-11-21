@@ -4,10 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-**AsianOptPI** is an R package implementing binomial tree pricing for Asian options with market price impact from hedging activities. The package targets CRAN submission and is currently in Phase 1 (skeleton complete).
+**AsianOptPI** is an R package implementing binomial tree pricing for Asian options with market price impact from hedging activities. The package targets CRAN submission and is currently in Phase 6 complete (vignettes), preparing for Phase 7 (CRAN compliance).
 
 **GitHub**: https://github.com/plato-12/AsianOptPI
-**Status**: Phase 1 complete, Phase 2 pending (C++ implementation)
+**Status**: Phase 6 complete - Core functionality, documentation, tests, and vignettes implemented
+
+**Progress**: 75% complete (6/8 phases)
+- ✅ Phase 1: Initial Setup
+- ✅ Phase 2: Core Implementation (C++/Rcpp)
+- ✅ Phase 3: R Wrapper Functions
+- ✅ Phase 4: Documentation
+- ✅ Phase 5: Testing (166 tests passing)
+- ✅ Phase 6: Vignettes
+- ⏳ Phase 7: CRAN Compliance (next)
+- ⏳ Phase 8: Submission
 
 ## Mathematical Foundation
 
@@ -83,7 +93,7 @@ $$\rho^* = \exp\left[\frac{1}{4} \cdot \frac{(\tilde{u}^n - \tilde{d}^n)^2}{\til
 - **n = 20**: ~1 million paths (~10 seconds)
 - **n > 20**: Issue **warning** to user
 
-### Implementation Strategy (Phase 2)
+### Implementation Strategy
 
 **Path Generation** (recursive binary enumeration):
 ```cpp
@@ -202,7 +212,7 @@ r = 0.05  # WRONG
 
 This is documented in Theory.md and must be enforced in validation.
 
-## Code Architecture (Planned)
+## Code Architecture (Implemented)
 
 ### C++ Layer (`src/`)
 
@@ -257,25 +267,58 @@ This is documented in Theory.md and must be enforced in validation.
 
 ### Test Categories (`tests/testthat/`)
 
-1. **Validation** (`test-validation.R`):
+**Status**: ✅ 166 tests passing (0 failures, 0 warnings, 0 skips)
+
+1. **Validation** (`test-validation.R`): 28 tests
    - Invalid inputs → errors
    - No-arbitrage violations → errors
    - Large $n$ → warnings
 
-2. **Mathematical Properties** (`test-geometric.R`):
+2. **Mathematical Properties** (`test-geometric.R`): 29 tests
    - Monotonicity: Price decreases as $K$ increases
    - Price impact: $\lambda > 0$ → higher price (for calls)
    - Boundary: $\lambda = 0$ → standard CRR model
    - Hand calculation: $n=1$ case matches manual computation
 
-3. **Bounds** (`test-arithmetic.R`):
+3. **Bounds** (`test-arithmetic.R`): 68 tests
    - $V_0^G \leq V_0^A \leq \text{upper bound}$
    - $\rho^* \geq 1$
    - Lower bound equals geometric price
 
-4. **Utilities** (`test-utils.R`):
+4. **Utilities** (`test-utils.R`): 41 tests
    - $p^{eff} \in [0,1]$
    - $\tilde{u} > \tilde{d}$ when factors computed correctly
+
+## Vignettes
+
+### Available Vignettes (`vignettes/`)
+
+**Status**: ✅ Both vignettes created and ready
+
+1. **Theory Vignette** (`vignettes/theory.Rmd`):
+   - Complete mathematical background
+   - CRR binomial model
+   - Price impact mechanism
+   - Replicating portfolio method
+   - Geometric and arithmetic Asian options
+   - No-arbitrage constraints
+   - Computational complexity
+   - Working R examples integrated
+   - Access: `vignette("theory", package = "AsianOptPI")`
+
+2. **Examples Vignette** (`vignettes/examples.Rmd`):
+   - 12 comprehensive examples
+   - 11 visualization plots
+   - Sensitivity analyses (λ, K, v, n)
+   - Comparative studies (with/without impact)
+   - Volatility surface
+   - Moneyness analysis
+   - Asymmetric hedging scenarios
+   - Access: `vignette("examples", package = "AsianOptPI")`
+
+**Content**:
+- Theory: 211 lines, 4 R chunks, 20 LaTeX equations
+- Examples: 321 lines, 14 R chunks, 9 plots
 
 ## Documentation Standards
 
@@ -350,10 +393,36 @@ PKG_CXXFLAGS = -DRCPP_USE_GLOBAL_ROSTREAM
 
 - **Complete Development Guide**: `../PACKAGE_DEVELOPMENT_GUIDE.md` (comprehensive 8-phase guide)
 - **Mathematical Theory**: `../Theory.md` (full derivations and proofs)
-- **Phase Status**: `PHASE1_COMPLETE.md` (current progress)
+- **Package README**: `README.md` (user-facing documentation)
+- **News**: `NEWS.md` (version history and changes)
+
+## Package Status Summary
+
+**Current Phase**: Phase 6 complete, Phase 7 next
+
+**Implemented**:
+- ✅ C++ core implementation (Rcpp)
+  - `utils.cpp`, `utils.h`
+  - `geometric_asian.cpp`
+  - `arithmetic_bounds.cpp`
+- ✅ R wrapper functions
+  - `price_geometric_asian()`
+  - `arithmetic_asian_bounds()`
+  - Utility functions (compute_p_eff, check_no_arbitrage)
+- ✅ Input validation (`validation.R`)
+- ✅ Documentation (Roxygen2, all functions documented)
+- ✅ Testing (166 tests passing)
+- ✅ Vignettes (theory + examples)
+
+**Pending**:
+- ⏳ CRAN compliance checks (Phase 7)
+- ⏳ Multi-platform testing
+- ⏳ Final polishing
+- ⏳ CRAN submission (Phase 8)
 
 ## Contact
 
 **Maintainer**: Priyanshu Tiwari
 **GitHub**: https://github.com/plato-12/AsianOptPI
-**Status**: Phase 1 complete (skeleton), Phase 2 pending (implementation)
+**Status**: Phase 6 complete (75% ready for CRAN submission)
+**Next Steps**: Run devtools::check() for CRAN compliance

@@ -99,7 +99,7 @@ test_that("Warning issued for large n", {
 
   expect_warning(
     price_geometric_asian(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 25),
-    "2\\^25.*33554432"
+    "2\\^25.*(33554432|3\\.355.*e\\+07)"
   )
 
   # No warning for n <= 20

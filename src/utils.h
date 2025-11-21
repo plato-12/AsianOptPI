@@ -31,4 +31,7 @@ std::vector<double> generate_price_path(
     double d_tilde
 );
 
+// Compute binomial coefficient C(n, k) = n! / (k! * (n-k)!)
+double binomial_coefficient(int n, int k);
+
 #endif

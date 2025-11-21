@@ -78,3 +78,28 @@ std::vector<double> generate_price_path(
 
     return prices;
 }
+
+double binomial_coefficient(int n, int k) {
+    if (k < 0 || k > n) {
+        return 0.0;
+    }
+
+    if (k == 0 || k == n) {
+        return 1.0;
+    }
+
+    // Use symmetry property: C(n,k) = C(n, n-k)
+    if (k > n - k) {
+        k = n - k;
+    }
+
+    // Compute using multiplicative formula for numerical stability
+    // C(n,k) = n * (n-1) * ... * (n-k+1) / (k * (k-1) * ... * 1)
+    double result = 1.0;
+    for (int i = 0; i < k; ++i) {
+        result *= (n - i);
+        result /= (i + 1);
+    }
+
+    return result;
+}

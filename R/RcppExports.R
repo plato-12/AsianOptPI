@@ -37,6 +37,105 @@ arithmetic_asian_bounds_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     .Call(`_AsianOptPI_arithmetic_asian_bounds_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
 }
 
+#' Price European Call Option with Price Impact
+#'
+#' Computes the exact price of a European call option using the
+#' binomial tree model with price impact from hedging activities.
+#'
+#' @param S0 Initial stock price (positive)
+#' @param K Strike price (positive)
+#' @param r Gross risk-free rate per period (e.g., 1.05 for 5\% rate)
+#' @param u Base up factor in CRR model (e.g., 1.2)
+#' @param d Base down factor in CRR model (e.g., 0.8)
+#' @param lambda Price impact coefficient (non-negative)
+#' @param v_u Hedging volume on up move (non-negative)
+#' @param v_d Hedging volume on down move (non-negative)
+#' @param n Number of time steps (positive integer)
+#'
+#' @return European call option price
+#'
+#' @details
+#' The function computes the European call option price using the CRR binomial
+#' model with price impact. Unlike path-dependent Asian options, European options
+#' only depend on the terminal stock price, allowing for efficient O(n) computation.
+#'
+#' The pricing formula is:
+#' \deqn{V_0 = \frac{1}{r^n} \sum_{k=0}^{n} \binom{n}{k} p_{eff}^k (1-p_{eff})^{n-k} \max(0, S_n(k) - K)}
+#'
+#' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
+#'
+#' Price impact modifies the up and down factors:
+#' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+#' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+#' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+#'
+#' @references
+#' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
+#' A simplified approach. Journal of Financial Economics, 7(3), 229-263.
+#' \doi{10.1016/0304-405X(79)90015-1}
+#'
+#' @examples
+#' \dontrun{
+#' # Basic example with 10 time steps
+#' price_european_call_cpp(
+#'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 10
+#' )
+#' }
+#'
+#' @export
+price_european_call_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
+    .Call(`_AsianOptPI_price_european_call_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
+}
+
+#' Price European Put Option with Price Impact
+#'
+#' Computes the exact price of a European put option using the
+#' binomial tree model with price impact from hedging activities.
+#'
+#' @param S0 Initial stock price (positive)
+#' @param K Strike price (positive)
+#' @param r Gross risk-free rate per period (e.g., 1.05 for 5\% rate)
+#' @param u Base up factor in CRR model (e.g., 1.2)
+#' @param d Base down factor in CRR model (e.g., 0.8)
+#' @param lambda Price impact coefficient (non-negative)
+#' @param v_u Hedging volume on up move (non-negative)
+#' @param v_d Hedging volume on down move (non-negative)
+#' @param n Number of time steps (positive integer)
+#'
+#' @return European put option price
+#'
+#' @details
+#' The function computes the European put option price using the CRR binomial
+#' model with price impact. The pricing formula is:
+#' \deqn{V_0 = \frac{1}{r^n} \sum_{k=0}^{n} \binom{n}{k} p_{eff}^k (1-p_{eff})^{n-k} \max(0, K - S_n(k))}
+#'
+#' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
+#'
+#' Price impact modifies the up and down factors:
+#' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+#' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+#' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+#'
+#' @references
+#' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
+#' A simplified approach. Journal of Financial Economics, 7(3), 229-263.
+#' \doi{10.1016/0304-405X(79)90015-1}
+#'
+#' @examples
+#' \dontrun{
+#' # Basic example with 10 time steps
+#' price_european_put_cpp(
+#'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 10
+#' )
+#' }
+#'
+#' @export
+price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
+    .Call(`_AsianOptPI_price_european_put_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
+}
+
 #' Price Geometric Asian Call Option with Price Impact
 #'
 #' Computes the exact price of a geometric Asian call option using the
