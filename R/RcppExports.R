@@ -26,11 +26,11 @@
 #' }
 #'
 #' @details
-#' Lower bound: V_0^A >= V_0^G (by AM-GM inequality)
+#' Lower bound: \eqn{V_0^A \ge V_0^G} (by AM-GM inequality)
 #'
-#' Upper bound: V_0^A <= V_0^G + (rho* - 1) * E^Q[G_n] / r^n
+#' Upper bound: \eqn{V_0^A \le V_0^G + (rho^* - 1) \cdot E^Q(G_n) / r^n}
 #'
-#' where rho* = exp[(u_tilde^n - d_tilde^n)^2 / (4 * u_tilde^n * d_tilde^n)]
+#' where \eqn{rho^* = \exp((u_{tilde}^n - d_{tilde}^n)^2 / (4 \cdot u_{tilde}^n \cdot d_{tilde}^n))}
 #'
 #' @export
 arithmetic_asian_bounds_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
@@ -155,13 +155,17 @@ price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #'
 #' @details
 #' The function enumerates all 2^n possible price paths and computes:
-#' - Geometric average: G = (S_0 * S_1 * ... * S_n)^(1/(n+1))
-#' - Payoff: max(0, G - K)
-#' - Option value: (1/r^n) * sum over paths [p^k * (1-p)^(n-k) * payoff]
+#' \itemize{
+#'   \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
+#'   \item Payoff: \eqn{\max(0, G - K)}
+#'   \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
+#' }
 #'
 #' Price impact modifies the up and down factors:
-#' - Effective up factor: u_tilde = u * exp(lambda * v_u)
-#' - Effective down factor: d_tilde = d * exp(-lambda * v_d)
+#' \itemize{
+#'   \item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+#'   \item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+#' }
 #'
 #' @references
 #' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:

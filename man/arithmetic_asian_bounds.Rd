@@ -11,7 +11,7 @@ arithmetic_asian_bounds(S0, K, r, u, d, lambda, v_u, v_d, n, validate = TRUE)
 
 \item{K}{Strike price (must be positive)}
 
-\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\\% rate)}
+\item{r}{Gross risk-free rate per period (e.g., 1.05)}
 
 \item{u}{Base up factor in CRR model (must be > d)}
 

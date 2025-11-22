@@ -52,13 +52,17 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
 //'
 //' @details
 //' The function enumerates all 2^n possible price paths and computes:
-//' - Geometric average: G = (S_0 * S_1 * ... * S_n)^(1/(n+1))
-//' - Payoff: max(0, G - K)
-//' - Option value: (1/r^n) * sum over paths [p^k * (1-p)^(n-k) * payoff]
+//' \itemize{
+//'   \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
+//'   \item Payoff: \eqn{\max(0, G - K)}
+//'   \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
+//' }
 //'
 //' Price impact modifies the up and down factors:
-//' - Effective up factor: u_tilde = u * exp(lambda * v_u)
-//' - Effective down factor: d_tilde = d * exp(-lambda * v_d)
+//' \itemize{
+//'   \item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+//'   \item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+//' }
 //'
 //' @references
 //' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:

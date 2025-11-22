@@ -6,7 +6,7 @@
 #'
 #' @param S0 Initial stock price (must be positive)
 #' @param K Strike price (must be positive)
-#' @param r Gross risk-free rate per period (e.g., 1.05 for 5\% rate)
+#' @param r Gross risk-free rate per period (e.g., 1.05)
 #' @param u Base up factor in CRR model (must be > d)
 #' @param d Base down factor in CRR model (must be positive)
 #' @param lambda Price impact coefficient (non-negative)

@@ -35,15 +35,15 @@ binomial tree model with price impact from hedging activities.
 \details{
 The function enumerates all 2^n possible price paths and computes:
 \itemize{
-\item Geometric average: G = (S_0 * S_1 * ... * S_n)^(1/(n+1))
-\item Payoff: max(0, G - K)
-\item Option value: (1/r^n) * sum over paths \link{p^k * (1-p)^(n-k) * payoff}
+\item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
+\item Payoff: \eqn{\max(0, G - K)}
+\item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
 }
 
 Price impact modifies the up and down factors:
 \itemize{
-\item Effective up factor: u_tilde = u * exp(lambda * v_u)
-\item Effective down factor: d_tilde = d * exp(-lambda * v_d)
+\item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+\item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
 }
 }
 \examples{

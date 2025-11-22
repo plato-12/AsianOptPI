@@ -65,9 +65,8 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 
   # Warning for computational complexity
   # Note: This warning is only relevant for path-dependent options (Asian)
-  # European options are O(n) and don't enumerate paths
   if (n > 20) {
-    # Use scientific notation for large numbers to avoid overflow
+    # Scientific notation for large numbers to avoid overflow
     num_paths <- 2^n
     if (n > 30) {
       warning(sprintf(

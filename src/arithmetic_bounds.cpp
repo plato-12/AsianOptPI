@@ -32,11 +32,11 @@ std::vector<std::vector<int>> generate_all_paths(int n);
 //' }
 //'
 //' @details
-//' Lower bound: V_0^A >= V_0^G (by AM-GM inequality)
+//' Lower bound: \eqn{V_0^A \ge V_0^G} (by AM-GM inequality)
 //'
-//' Upper bound: V_0^A <= V_0^G + (rho* - 1) * E^Q[G_n] / r^n
+//' Upper bound: \eqn{V_0^A \le V_0^G + (rho^* - 1) \cdot E^Q(G_n) / r^n}
 //'
-//' where rho* = exp[(u_tilde^n - d_tilde^n)^2 / (4 * u_tilde^n * d_tilde^n)]
+//' where \eqn{rho^* = \exp((u_{tilde}^n - d_{tilde}^n)^2 / (4 \cdot u_{tilde}^n \cdot d_{tilde}^n))}
 //'
 //' @export
 // [[Rcpp::export]]
