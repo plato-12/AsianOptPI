@@ -1,0 +1,7 @@
+"n","Kemma_Vorst_Time_ms","Price_Impact_Time_ms","Time_Ratio","Num_Paths"
+5,0,0,NA,32
+8,0,0,NA,256
+10,0,1.00000000000011,Inf,1024
+12,0,2,Inf,4096
+14,0,10,Inf,16384
+16,0,49.0000000000002,Inf,65536

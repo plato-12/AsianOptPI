@@ -86,12 +86,55 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// price_kemma_vorst_arithmetic_cpp
+List price_kemma_vorst_arithmetic_cpp(double S0, double K, double r, double sigma, double T0, double T, int n, int M, std::string option_type, bool use_control_variate, int seed);
+RcppExport SEXP _AsianOptPI_price_kemma_vorst_arithmetic_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP T0SEXP, SEXP TSEXP, SEXP nSEXP, SEXP MSEXP, SEXP option_typeSEXP, SEXP use_control_variateSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type r(rSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type T0(T0SEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_control_variate(use_control_variateSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(price_kemma_vorst_arithmetic_cpp(S0, K, r, sigma, T0, T, n, M, option_type, use_control_variate, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// price_kemma_vorst_arithmetic_binomial_cpp
+List price_kemma_vorst_arithmetic_binomial_cpp(double S0, double K, double r, double u, double d, int n, int M, std::string option_type, bool use_control_variate, int seed);
+RcppExport SEXP _AsianOptPI_price_kemma_vorst_arithmetic_binomial_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP nSEXP, SEXP MSEXP, SEXP option_typeSEXP, SEXP use_control_variateSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type r(rSEXP);
+    Rcpp::traits::input_parameter< double >::type u(uSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_control_variate(use_control_variateSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(price_kemma_vorst_arithmetic_binomial_cpp(S0, K, r, u, d, n, M, option_type, use_control_variate, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_AsianOptPI_arithmetic_asian_bounds_cpp", (DL_FUNC) &_AsianOptPI_arithmetic_asian_bounds_cpp, 9},
     {"_AsianOptPI_price_european_call_cpp", (DL_FUNC) &_AsianOptPI_price_european_call_cpp, 9},
     {"_AsianOptPI_price_european_put_cpp", (DL_FUNC) &_AsianOptPI_price_european_put_cpp, 9},
     {"_AsianOptPI_price_geometric_asian_cpp", (DL_FUNC) &_AsianOptPI_price_geometric_asian_cpp, 9},
+    {"_AsianOptPI_price_kemma_vorst_arithmetic_cpp", (DL_FUNC) &_AsianOptPI_price_kemma_vorst_arithmetic_cpp, 11},
+    {"_AsianOptPI_price_kemma_vorst_arithmetic_binomial_cpp", (DL_FUNC) &_AsianOptPI_price_kemma_vorst_arithmetic_binomial_cpp, 10},
     {NULL, NULL, 0}
 };
 

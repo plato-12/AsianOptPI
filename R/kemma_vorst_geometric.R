@@ -1,0 +1,209 @@
+#' Kemma-Vorst Geometric Average Asian Call Option (Analytical)
+#'
+#' Calculates the price of a geometric average Asian call option using the
+#' closed-form analytical solution from Kemma & Vorst (1990). This is the
+#' standard benchmark implementation WITHOUT price impact.
+#'
+#' @param S0 Numeric. Initial stock price at time T0 (start of averaging period).
+#'   Must be positive.
+#' @param K Numeric. Strike price. Must be positive.
+#' @param r Numeric. Gross risk-free interest rate per period (e.g., 1.05 for 5%).
+#'   Must be positive.
+#' @param sigma Numeric. Volatility (annualized standard deviation). Must be
+#'   non-negative.
+#' @param T0 Numeric. Start time of averaging period. Must be non-negative.
+#' @param T Numeric. Maturity time. Must be greater than T0.
+#' @param option_type Character. Type of option: "call" (default) or "put".
+#'
+#' @return Numeric. The analytical price of the geometric average Asian option.
+#'
+#' @details
+#' The geometric average at maturity is defined as:
+#' \deqn{G_T = \exp\left(\frac{1}{T-T_0} \int_{T_0}^{T} \log(S(\tau)) d\tau\right)}
+#'
+#' For the discrete case with n+1 observations:
+#' \deqn{G_T = \left(\prod_{i=0}^{n} S(T_i)\right)^{1/(n+1)}}
+#'
+#' The key property is that \eqn{\log(G_T)} is normally distributed:
+#' \deqn{\log(G_T) \sim N(\mu_G, \sigma_G^2)}
+#'
+#' where:
+#' \deqn{\mu_G = \log(S_0) + \frac{1}{2}(r - \frac{\sigma^2}{2})(T - T_0)}
+#' \deqn{\sigma_G = \frac{\sigma}{\sqrt{3}}}
+#'
+#' The closed-form solution for a call option is:
+#' \deqn{C = S_0 e^{d^*} N(d) - K N(d - \sigma_G\sqrt{T-T_0})}
+#'
+#' where:
+#' \deqn{d^* = \frac{1}{2}(r - \frac{\sigma^2}{6})(T - T_0)}
+#' \deqn{d = \frac{\log(S_0/K) + \frac{1}{2}(r + \frac{\sigma^2}{6})(T-T_0)}{\sigma\sqrt{(T-T_0)/3}}}
+#'
+#' and \eqn{N(\cdot)} is the cumulative standard normal distribution function.
+#'
+#' This is analogous to the Black-Scholes formula with adjusted parameters:
+#' \deqn{\hat{\sigma} = \frac{\sigma}{\sqrt{3}}}
+#' \deqn{\hat{r} = r - \frac{\sigma^2}{3}}
+#'
+#' @section Note on Risk-Free Rate:
+#' The parameter \code{r} should be specified as a \strong{gross rate}
+#' (e.g., \code{r = 1.05} for 5\% per period), NOT as a net rate
+#' (NOT \code{r = 0.05}). This is standard in the binomial model and consistent
+#' with the rest of the AsianOptPI package.
+#'
+#' However, for the Kemma-Vorst continuous-time model, \code{r} is typically
+#' interpreted as the continuously compounded rate. If you have a gross rate
+#' \code{r_gross}, convert it using: \code{r = log(r_gross)}.
+#'
+#' @references
+#' Kemna, A.G.Z. and Vorst, A.C.F. (1990). "A Pricing Method for Options Based
+#' on Average Asset Values." \emph{Journal of Banking and Finance}, 14, 113-129.
+#'
+#' @examples
+#' # Basic example: at-the-money call option
+#' price_kemma_vorst_geometric(
+#'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+#'   T0 = 0, T = 1, option_type = "call"
+#' )
+#'
+#' # Compare call and put prices
+#' call_price <- price_kemma_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "call")
+#' put_price <- price_kemma_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "put")
+#' cat("Call:", call_price, "Put:", put_price, "\n")
+#'
+#' # Out-of-the-money option
+#' price_kemma_vorst_geometric(100, 120, 0.05, 0.2, 0, 1, "call")
+#'
+#' # Different averaging periods
+#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.25, "call")  # 3 months
+#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.5, "call")   # 6 months
+#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 1, "call")     # 1 year
+#'
+#' @export
+price_kemma_vorst_geometric <- function(S0, K, r, sigma, T0, T,
+                                         option_type = "call") {
+  # Input validation
+  if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
+    stop("S0 must be a positive number")
+  }
+  if (!is.numeric(K) || length(K) != 1 || K <= 0) {
+    stop("K must be a positive number")
+  }
+  if (!is.numeric(r) || length(r) != 1) {
+    stop("r must be a number")
+  }
+  if (!is.numeric(sigma) || length(sigma) != 1 || sigma < 0) {
+    stop("sigma must be a non-negative number")
+  }
+  if (!is.numeric(T0) || length(T0) != 1 || T0 < 0) {
+    stop("T0 must be a non-negative number")
+  }
+  if (!is.numeric(T) || length(T) != 1 || T <= T0) {
+    stop("T must be greater than T0")
+  }
+  option_type <- match.arg(option_type, c("call", "put"))
+
+  # Time to maturity from start of averaging
+  tau <- T - T0
+
+  # Handle zero volatility case
+  if (sigma == 0) {
+    # With zero volatility, S(t) = S0 * exp(r*t)
+    # Geometric average: G = S0 * exp(r * tau/2)
+    G_T <- S0 * exp(r * tau / 2)
+    if (option_type == "call") {
+      return(max(0, G_T - K) * exp(-r * tau))
+    } else {
+      return(max(0, K - G_T) * exp(-r * tau))
+    }
+  }
+
+  # Adjusted parameters for geometric average
+  sigma_G <- sigma / sqrt(3)
+  d_star <- 0.5 * (r - sigma^2 / 6) * tau
+
+  # Calculate d parameter
+  d <- (log(S0 / K) + 0.5 * (r + sigma^2 / 6) * tau) / (sigma * sqrt(tau / 3))
+
+  # Calculate d2
+  d2 <- d - sigma_G * sqrt(tau)
+
+  # Option price using cumulative normal distribution
+  if (option_type == "call") {
+    price <- exp(d_star) * S0 * pnorm(d) - K * pnorm(d2)
+  } else {
+    # Put-call transformation for geometric Asian
+    # Put = Call - S0*exp(d_star) + K
+    price <- K * pnorm(-d2) - exp(d_star) * S0 * pnorm(-d)
+  }
+
+  return(price)
+}
+
+
+#' Kemma-Vorst Geometric Average Asian Option (Alternative Parameterization)
+#'
+#' Alternative interface using discrete parameters (n steps, up/down factors)
+#' instead of continuous parameters (sigma, time). This provides compatibility
+#' with binomial tree conventions.
+#'
+#' @param S0 Numeric. Initial stock price. Must be positive.
+#' @param K Numeric. Strike price. Must be positive.
+#' @param r Numeric. Gross risk-free rate per period. Must be positive.
+#' @param u Numeric. Up factor in binomial tree. Must be > 1.
+#' @param d Numeric. Down factor in binomial tree. Must be < 1 and < u.
+#' @param n Integer. Number of time steps. Must be positive.
+#' @param option_type Character. Type of option: "call" (default) or "put".
+#'
+#' @return Numeric. The analytical price of the geometric average Asian option.
+#'
+#' @details
+#' This function converts binomial parameters (u, d, n) to continuous parameters
+#' (sigma, T) and calls \code{price_kemma_vorst_geometric}.
+#'
+#' The conversion formulas are:
+#' \deqn{\sigma = \sqrt{\frac{\log(u/d)^2}{4 \Delta t}}}
+#' \deqn{\mu = \frac{\log(u) + \log(d)}{2 \Delta t}}
+#'
+#' where \eqn{\Delta t = 1/n} is the time step size.
+#'
+#' Note: This assumes the binomial tree is constructed to match a continuous
+#' lognormal process, which may not hold exactly for all parameter combinations.
+#'
+#' @examples
+#' # Using binomial tree parameters
+#' price_kemma_vorst_geometric_binomial(
+#'   S0 = 100, K = 100, r = 1.05,
+#'   u = 1.2, d = 0.8, n = 10
+#' )
+#'
+#' @export
+price_kemma_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
+                                                   option_type = "call") {
+  # Input validation
+  if (!is.numeric(n) || length(n) != 1 || n < 1 || n != as.integer(n)) {
+    stop("n must be a positive integer")
+  }
+  if (!is.numeric(u) || length(u) != 1 || u <= 1) {
+    stop("u must be greater than 1")
+  }
+  if (!is.numeric(d) || length(d) != 1 || d >= 1 || d >= u) {
+    stop("d must be less than 1 and less than u")
+  }
+
+  # Convert gross rate to continuously compounded rate
+  r_continuous <- log(r)
+
+  # Time step
+  dt <- 1 / n
+
+  # Estimate volatility from binomial parameters
+  # Using the relationship: u = exp(sigma * sqrt(dt)), d = exp(-sigma * sqrt(dt))
+  sigma <- log(u / d) / (2 * sqrt(dt))
+
+  # Set T0 = 0, T = 1 (n periods with dt = 1/n gives total time 1)
+  T0 <- 0
+  T <- 1
+
+  # Call the continuous version
+  price_kemma_vorst_geometric(S0, K, r_continuous, sigma, T0, T, option_type)
+}
