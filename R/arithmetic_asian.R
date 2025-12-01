@@ -5,6 +5,12 @@
 #' inequality).
 #'
 #' @inheritParams price_geometric_asian
+#' @param compute_path_specific Logical. If TRUE, computes the tighter path-specific
+#'   upper bound by sampling paths. Default is FALSE.
+#' @param max_sample_size Integer. Maximum number of paths to sample when computing
+#'   path-specific bound. Default is 100000.
+#' @param sample_fraction Numeric. Fraction of total paths to sample (between 0 and 1).
+#'   Default is 0.1 (10\%).
 #'
 #' @details
 #' The arithmetic Asian option has payoff:
@@ -14,24 +20,41 @@
 #' Since \eqn{A_n \geq G_n} (AM-GM inequality), we have:
 #' \deqn{V_0^A \geq V_0^G}
 #'
-#' The upper bound is derived using the reverse AM-GM inequality:
+#' **Global Upper Bound:**
+#'
+#' The global upper bound uses the worst-case spread parameter:
 #' \deqn{V_0^A \leq V_0^G + \frac{(\rho^* - 1)}{r^n} \mathbb{E}^Q[G_n]}
 #'
 #' where \eqn{\rho^* = \exp\left[\frac{(\tilde{u}^n - \tilde{d}^n)^2}{4\tilde{u}^n\tilde{d}^n}\right]}
 #'
+#' **Path-Specific Upper Bound:**
+#'
+#' A tighter bound can be obtained by using path-specific \eqn{\rho(\omega)} values:
+#' \deqn{V_0^A \leq V_0^G + \frac{1}{r^n}\sum_{\omega} P(\omega) \cdot (\rho(\omega) - 1) \cdot G_n(\omega)}
+#'
+#' where \eqn{\rho(\omega) = \exp\left[\frac{(S_M(\omega) - S_m(\omega))^2}{4 S_m(\omega) S_M(\omega)}\right]}
+#' uses the actual min/max prices along each path. This bound satisfies
+#' \eqn{V_0^G \leq V_0^A \leq} path-specific bound \eqn{\leq} global bound.
+#'
+#' For large \eqn{n}, the path-specific bound is estimated via random sampling
+#' of paths to maintain computational efficiency.
+#'
 #' @return List containing:
 #' \describe{
 #'   \item{lower_bound}{Lower bound for arithmetic option (= geometric option price)}
-#'   \item{upper_bound}{Upper bound for arithmetic option}
+#'   \item{upper_bound}{Upper bound for arithmetic option (global bound, for backward compatibility)}
+#'   \item{upper_bound_global}{Global upper bound using \eqn{\rho^*}}
+#'   \item{upper_bound_path_specific}{Path-specific upper bound (only if compute_path_specific=TRUE, otherwise NA)}
 #'   \item{rho_star}{Spread parameter \eqn{\rho^*}}
 #'   \item{EQ_G}{Expected geometric average under risk-neutral measure}
 #'   \item{V0_G}{Geometric Asian option price (same as lower_bound)}
+#'   \item{n_paths_sampled}{Number of paths sampled for path-specific bound (0 if not computed)}
 #' }
 #'
 #' @export
 #'
 #' @examples
-#' # Compute bounds
+#' # Compute basic bounds (global bound only)
 #' bounds <- arithmetic_asian_bounds(
 #'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
 #'   lambda = 0.1, v_u = 1, v_d = 1, n = 3
@@ -39,8 +62,21 @@
 #'
 #' print(bounds)
 #'
-#' # Estimate arithmetic option price as midpoint
-#' estimated_price <- mean(c(bounds$lower_bound, bounds$upper_bound))
+#' # Compute with path-specific bound
+#' bounds_ps <- arithmetic_asian_bounds(
+#'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+#'   lambda = 0.1, v_u = 1, v_d = 1, n = 5,
+#'   compute_path_specific = TRUE
+#' )
+#'
+#' print(bounds_ps)
+#'
+#' # Estimate arithmetic option price as midpoint of path-specific bounds
+#' if (!is.na(bounds_ps$upper_bound_path_specific)) {
+#'   estimated_price <- mean(c(bounds_ps$lower_bound,
+#'                             bounds_ps$upper_bound_path_specific))
+#'   cat("Estimated price:", estimated_price, "\n")
+#' }
 #'
 #' @references
 #' Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
@@ -50,14 +86,36 @@
 #'
 #' @seealso \code{\link{price_geometric_asian}}
 arithmetic_asian_bounds <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
+                                     compute_path_specific = FALSE,
+                                     max_sample_size = 100000,
+                                     sample_fraction = 0.1,
                                      validate = TRUE) {
   # Input validation
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
+  # Validate additional parameters
+  if (!is.logical(compute_path_specific)) {
+    stop("compute_path_specific must be TRUE or FALSE")
+  }
+
+  if (max_sample_size < 1) {
+    stop("max_sample_size must be at least 1")
+  }
+
+  if (sample_fraction <= 0 || sample_fraction > 1) {
+    stop("sample_fraction must be between 0 and 1")
+  }
+
   # Call C++ implementation
-  result <- arithmetic_asian_bounds_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
+  result <- arithmetic_asian_bounds_extended_cpp(
+    S0, K, r, u, d, lambda, v_u, v_d, n,
+    compute_path_specific, max_sample_size, sample_fraction
+  )
+
+  # Add backward compatibility: "upper_bound" = global bound
+  result$upper_bound <- result$upper_bound_global
 
   # Add class for pretty printing
   class(result) <- c("arithmetic_bounds", "list")
@@ -75,10 +133,23 @@ arithmetic_asian_bounds <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
 print.arithmetic_bounds <- function(x, ...) {
   cat("Arithmetic Asian Option Bounds\n")
   cat("================================\n")
-  cat(sprintf("Lower bound (V0_G):  %.6f\n", x$lower_bound))
-  cat(sprintf("Upper bound:         %.6f\n", x$upper_bound))
-  cat(sprintf("Midpoint estimate:   %.6f\n", mean(c(x$lower_bound, x$upper_bound))))
-  cat(sprintf("Spread (ρ*):         %.6f\n", x$rho_star))
-  cat(sprintf("E^Q[G_n]:            %.6f\n", x$EQ_G))
+  cat(sprintf("Lower bound (V0_G):        %.6f\n", x$lower_bound))
+  cat(sprintf("Upper bound (global):      %.6f\n", x$upper_bound_global))
+
+  if (!is.null(x$upper_bound_path_specific) &&
+        !is.na(x$upper_bound_path_specific)) {
+    cat(sprintf("Upper bound (path-spec):   %.6f\n",
+                x$upper_bound_path_specific))
+    cat(sprintf("  (sampled %d paths)\n", x$n_paths_sampled))
+    cat(sprintf("Midpoint (path-spec):      %.6f\n",
+                mean(c(x$lower_bound, x$upper_bound_path_specific))))
+  } else {
+    cat(sprintf("Midpoint (global):         %.6f\n",
+                mean(c(x$lower_bound, x$upper_bound_global))))
+  }
+
+  cat(sprintf("Spread (ρ*):               %.6f\n", x$rho_star))
+  cat(sprintf("E^Q[G_n]:                  %.6f\n", x$EQ_G))
+
   invisible(x)
 }

@@ -4,7 +4,21 @@
 \alias{arithmetic_asian_bounds}
 \title{Bounds for Arithmetic Asian Call Option with Price Impact}
 \usage{
-arithmetic_asian_bounds(S0, K, r, u, d, lambda, v_u, v_d, n, validate = TRUE)
+arithmetic_asian_bounds(
+  S0,
+  K,
+  r,
+  u,
+  d,
+  lambda,
+  v_u,
+  v_d,
+  n,
+  compute_path_specific = FALSE,
+  max_sample_size = 1e+05,
+  sample_fraction = 0.1,
+  validate = TRUE
+)
 }
 \arguments{
 \item{S0}{Initial stock price (must be positive)}
@@ -25,16 +39,28 @@ arithmetic_asian_bounds(S0, K, r, u, d, lambda, v_u, v_d, n, validate = TRUE)
 
 \item{n}{Number of time steps (positive integer, recommended n <= 20)}
 
+\item{compute_path_specific}{Logical. If TRUE, computes the tighter path-specific
+upper bound by sampling paths. Default is FALSE.}
+
+\item{max_sample_size}{Integer. Maximum number of paths to sample when computing
+path-specific bound. Default is 100000.}
+
+\item{sample_fraction}{Numeric. Fraction of total paths to sample (between 0 and 1).
+Default is 0.1 (10\\%).}
+
 \item{validate}{Logical; if TRUE, performs input validation}
 }
 \value{
 List containing:
 \describe{
 \item{lower_bound}{Lower bound for arithmetic option (= geometric option price)}
-\item{upper_bound}{Upper bound for arithmetic option}
+\item{upper_bound}{Upper bound for arithmetic option (global bound, for backward compatibility)}
+\item{upper_bound_global}{Global upper bound using \eqn{\rho^*}}
+\item{upper_bound_path_specific}{Path-specific upper bound (only if compute_path_specific=TRUE, otherwise NA)}
 \item{rho_star}{Spread parameter \eqn{\rho^*}}
 \item{EQ_G}{Expected geometric average under risk-neutral measure}
 \item{V0_G}{Geometric Asian option price (same as lower_bound)}
+\item{n_paths_sampled}{Number of paths sampled for path-specific bound (0 if not computed)}
 }
 }
 \description{
@@ -50,13 +76,27 @@ where \eqn{A_n = \frac{1}{n+1}\sum_{i=0}^{n} S_i}
 Since \eqn{A_n \geq G_n} (AM-GM inequality), we have:
 \deqn{V_0^A \geq V_0^G}
 
-The upper bound is derived using the reverse AM-GM inequality:
+\strong{Global Upper Bound:}
+
+The global upper bound uses the worst-case spread parameter:
 \deqn{V_0^A \leq V_0^G + \frac{(\rho^* - 1)}{r^n} \mathbb{E}^Q[G_n]}
 
 where \eqn{\rho^* = \exp\left[\frac{(\tilde{u}^n - \tilde{d}^n)^2}{4\tilde{u}^n\tilde{d}^n}\right]}
+
+\strong{Path-Specific Upper Bound:}
+
+A tighter bound can be obtained by using path-specific \eqn{\rho(\omega)} values:
+\deqn{V_0^A \leq V_0^G + \frac{1}{r^n}\sum_{\omega} P(\omega) \cdot (\rho(\omega) - 1) \cdot G_n(\omega)}
+
+where \eqn{\rho(\omega) = \exp\left[\frac{(S_M(\omega) - S_m(\omega))^2}{4 S_m(\omega) S_M(\omega)}\right]}
+uses the actual min/max prices along each path. This bound satisfies
+\eqn{V_0^G \leq V_0^A \leq} path-specific bound \eqn{\leq} global bound.
+
+For large \eqn{n}, the path-specific bound is estimated via random sampling
+of paths to maintain computational efficiency.
 }
 \examples{
-# Compute bounds
+# Compute basic bounds (global bound only)
 bounds <- arithmetic_asian_bounds(
   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
   lambda = 0.1, v_u = 1, v_d = 1, n = 3
@@ -64,8 +104,21 @@ bounds <- arithmetic_asian_bounds(
 
 print(bounds)
 
-# Estimate arithmetic option price as midpoint
-estimated_price <- mean(c(bounds$lower_bound, bounds$upper_bound))
+# Compute with path-specific bound
+bounds_ps <- arithmetic_asian_bounds(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1, n = 5,
+  compute_path_specific = TRUE
+)
+
+print(bounds_ps)
+
+# Estimate arithmetic option price as midpoint of path-specific bounds
+if (!is.na(bounds_ps$upper_bound_path_specific)) {
+  estimated_price <- mean(c(bounds_ps$lower_bound,
+                            bounds_ps$upper_bound_path_specific))
+  cat("Estimated price:", estimated_price, "\n")
+}
 
 }
 \references{

@@ -3,9 +3,7 @@
 #' This script validates the theoretical connection between the CRR binomial
 #' implementation (with λ=0) and the Kemma-Vorst analytical formula for
 #' geometric average Asian options.
-#'
-#' Date: 2025-11-23
-#' Reference: See AsianOptPI/THEORETICAL_CONNECTION.md for detailed theory
+
 
 library(AsianOptPI)
 library(ggplot2)

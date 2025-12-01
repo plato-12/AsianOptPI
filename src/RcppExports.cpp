@@ -29,6 +29,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// arithmetic_asian_bounds_extended_cpp
+Rcpp::List arithmetic_asian_bounds_extended_cpp(double S0, double K, double r, double u, double d, double lambda, double v_u, double v_d, int n, bool compute_path_specific, int max_sample_size, double sample_fraction);
+RcppExport SEXP _AsianOptPI_arithmetic_asian_bounds_extended_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP lambdaSEXP, SEXP v_uSEXP, SEXP v_dSEXP, SEXP nSEXP, SEXP compute_path_specificSEXP, SEXP max_sample_sizeSEXP, SEXP sample_fractionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type r(rSEXP);
+    Rcpp::traits::input_parameter< double >::type u(uSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type v_u(v_uSEXP);
+    Rcpp::traits::input_parameter< double >::type v_d(v_dSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< bool >::type compute_path_specific(compute_path_specificSEXP);
+    Rcpp::traits::input_parameter< int >::type max_sample_size(max_sample_sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type sample_fraction(sample_fractionSEXP);
+    rcpp_result_gen = Rcpp::wrap(arithmetic_asian_bounds_extended_cpp(S0, K, r, u, d, lambda, v_u, v_d, n, compute_path_specific, max_sample_size, sample_fraction));
+    return rcpp_result_gen;
+END_RCPP
+}
 // price_european_call_cpp
 double price_european_call_cpp(double S0, double K, double r, double u, double d, double lambda, double v_u, double v_d, int n);
 RcppExport SEXP _AsianOptPI_price_european_call_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP lambdaSEXP, SEXP v_uSEXP, SEXP v_dSEXP, SEXP nSEXP) {
@@ -130,6 +152,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_AsianOptPI_arithmetic_asian_bounds_cpp", (DL_FUNC) &_AsianOptPI_arithmetic_asian_bounds_cpp, 9},
+    {"_AsianOptPI_arithmetic_asian_bounds_extended_cpp", (DL_FUNC) &_AsianOptPI_arithmetic_asian_bounds_extended_cpp, 12},
     {"_AsianOptPI_price_european_call_cpp", (DL_FUNC) &_AsianOptPI_price_european_call_cpp, 9},
     {"_AsianOptPI_price_european_put_cpp", (DL_FUNC) &_AsianOptPI_price_european_put_cpp, 9},
     {"_AsianOptPI_price_geometric_asian_cpp", (DL_FUNC) &_AsianOptPI_price_geometric_asian_cpp, 9},

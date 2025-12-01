@@ -1,0 +1,45 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+================================================================================ 
+ARITHMETIC AVERAGE COMPARISON ANALYSIS
+CRR Path-Specific Bounds vs Kemma-Vorst Monte Carlo
+================================================================================ 
+
+Base Parameters:
+  S0 = 100
+  K  = 100 (ATM)
+  r_gross = 1.050 (total period rate)
+  u  = 1.20
+  d  = 0.80
+  λ  = 0.00 (no price impact)
+  n_values = 5, 10, 15, 20
+  M  = 50,000 Monte Carlo simulations
+  Max paths = 2^20 = 1,048,576 (for CRR bounds)
+
+SECTION 2: Setup and Helper Functions
+-------------------------------------------------------------------------------- 
+
+Helper functions defined:
+  - crr_bounds_corrected(): CRR bounds with r^(1/n) rate conversion
+  - kv_monte_carlo(): Kemma-Vorst Monte Carlo with control variate
+
+SECTION 3: Bounds Validation (n convergence)
+-------------------------------------------------------------------------------- 
+
+Validating that Monte Carlo estimates fall within CRR bounds...
+Configuration: n = 5, 10, 15, 20, M = 50,000
+Max paths: 2^20 = 1,048,576
+
+n =  5 (2^5 = 32 paths): Error in arithmetic_asian_bounds(S0 = S0, K = K, r = r_per_step, u = u,  : 
+  unused arguments (compute_path_specific = TRUE, max_sample_size = 1e+05, sample_fraction = 0.1)
+Calls: crr_bounds_corrected
+Execution halted

@@ -3,6 +3,8 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <random>
+#include <set>
 
 // External function from geometric_asian.cpp
 std::vector<std::vector<int>> generate_all_paths(int n);
@@ -93,5 +95,204 @@ Rcpp::List arithmetic_asian_bounds_cpp(
         Rcpp::Named("rho_star") = rho_star,
         Rcpp::Named("EQ_G") = EQ_G,
         Rcpp::Named("V0_G") = lower_bound
+    );
+}
+
+//' Convert integer index to binary path
+//'
+//' @param idx Path index (0 to 2^n - 1)
+//' @param n Number of steps
+//' @return Vector of 0s and 1s representing the path
+std::vector<int> index_to_path(int idx, int n) {
+    std::vector<int> path(n);
+    for (int j = 0; j < n; j++) {
+        path[j] = (idx >> j) & 1;  // Extract j-th bit
+    }
+    return path;
+}
+
+//' Compute path-specific rho parameter
+//'
+//' @param prices Vector of stock prices along the path
+//' @return rho(omega) = exp((S_M - S_m)^2 / (4 * S_m * S_M))
+double compute_path_rho(const std::vector<double>& prices) {
+    double S_min = *std::min_element(prices.begin(), prices.end());
+    double S_max = *std::max_element(prices.begin(), prices.end());
+
+    if (S_min <= 0 || S_max <= 0) {
+        Rcpp::stop("Invalid prices: all prices must be positive");
+    }
+
+    double spread = std::pow(S_max - S_min, 2) / (4.0 * S_min * S_max);
+    return std::exp(spread);
+}
+
+//' Compute Arithmetic Asian Bounds with Path-Specific Upper Bound
+//'
+//' Computes lower bound (geometric option) and two upper bounds:
+//' global (using rho*) and path-specific (using sampled paths).
+//'
+//' @param S0 Initial stock price
+//' @param K Strike price
+//' @param r Gross risk-free rate
+//' @param u Base up factor
+//' @param d Base down factor
+//' @param lambda Price impact coefficient
+//' @param v_u Hedging volume on up move
+//' @param v_d Hedging volume on down move
+//' @param n Number of time steps
+//' @param compute_path_specific If TRUE, compute path-specific bound
+//' @param max_sample_size Maximum number of paths to sample (default 100000)
+//' @param sample_fraction Fraction of paths to sample (default 0.1 = 10%)
+//'
+//' @return List containing bounds and diagnostic information
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List arithmetic_asian_bounds_extended_cpp(
+    double S0, double K, double r, double u, double d,
+    double lambda, double v_u, double v_d, int n,
+    bool compute_path_specific = false,
+    int max_sample_size = 100000,
+    double sample_fraction = 0.1
+) {
+    // Compute effective factors
+    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+
+    // Generate all paths
+    std::vector<std::vector<int>> all_paths = generate_all_paths(n);
+
+    double discount = std::pow(r, -n);
+
+    // Compute lower bound (geometric option value)
+    double lower_bound = 0.0;
+    double EQ_G = 0.0;  // Expected geometric average
+
+    for (const auto& path : all_paths) {
+        std::vector<double> prices = generate_price_path(S0, path,
+                                                         factors.u_tilde,
+                                                         factors.d_tilde);
+
+        double G = geometric_mean(prices);
+        double payoff = std::max(0.0, G - K);
+
+        int n_ups = 0;
+        for (int move : path) {
+            if (move == 1) n_ups++;
+        }
+
+        double path_prob = std::pow(factors.p_eff, n_ups) *
+                          std::pow(1.0 - factors.p_eff, n - n_ups);
+
+        lower_bound += path_prob * payoff;
+        EQ_G += path_prob * G;
+    }
+
+    lower_bound *= discount;
+
+    // Compute rho_star (global spread parameter)
+    double u_n = std::pow(factors.u_tilde, n);
+    double d_n = std::pow(factors.d_tilde, n);
+    double spread_global = std::pow(u_n - d_n, 2) / (4.0 * u_n * d_n);
+    double rho_star = std::exp(spread_global);
+
+    // Compute global upper bound
+    double upper_bound_global = lower_bound + discount * (rho_star - 1.0) * EQ_G;
+
+    // Initialize path-specific bound as NA
+    double upper_bound_path_specific = NA_REAL;
+    int n_paths_sampled = 0;
+
+    // Compute path-specific bound if requested
+    if (compute_path_specific) {
+        // Calculate total number of paths
+        long long total_paths = 1LL << n;  // 2^n
+
+        // Determine sample size
+        long long desired_sample = (long long)(sample_fraction * total_paths);
+        n_paths_sampled = std::min((long long)max_sample_size, desired_sample);
+        n_paths_sampled = std::max(1, n_paths_sampled);  // At least 1 path
+
+        // Check if we should sample all paths
+        if (n_paths_sampled >= total_paths) {
+            // Use exact computation with all paths
+            n_paths_sampled = total_paths;
+            double sum_path_specific = 0.0;
+
+            for (const auto& path : all_paths) {
+                std::vector<double> prices = generate_price_path(S0, path,
+                                                                 factors.u_tilde,
+                                                                 factors.d_tilde);
+
+                double G = geometric_mean(prices);
+                double rho_omega = compute_path_rho(prices);
+
+                int n_ups = 0;
+                for (int move : path) {
+                    if (move == 1) n_ups++;
+                }
+
+                double path_prob = std::pow(factors.p_eff, n_ups) *
+                                  std::pow(1.0 - factors.p_eff, n - n_ups);
+
+                sum_path_specific += path_prob * (rho_omega - 1.0) * G;
+            }
+
+            upper_bound_path_specific = lower_bound + discount * sum_path_specific;
+
+        } else {
+            // Random sampling approach
+            std::random_device rd;
+            std::mt19937 gen(rd());
+
+            // Use set to ensure unique samples
+            std::set<int> sampled_indices;
+            std::uniform_int_distribution<> dis(0, total_paths - 1);
+
+            // Generate unique random indices
+            while ((int)sampled_indices.size() < n_paths_sampled) {
+                sampled_indices.insert(dis(gen));
+            }
+
+            // Compute sum over sampled paths
+            double sum_path_specific = 0.0;
+
+            for (int idx : sampled_indices) {
+                // Convert index to path
+                std::vector<int> path = index_to_path(idx, n);
+
+                // Generate prices
+                std::vector<double> prices = generate_price_path(S0, path,
+                                                                 factors.u_tilde,
+                                                                 factors.d_tilde);
+
+                double G = geometric_mean(prices);
+                double rho_omega = compute_path_rho(prices);
+
+                int n_ups = 0;
+                for (int move : path) {
+                    if (move == 1) n_ups++;
+                }
+
+                double path_prob = std::pow(factors.p_eff, n_ups) *
+                                  std::pow(1.0 - factors.p_eff, n - n_ups);
+
+                sum_path_specific += path_prob * (rho_omega - 1.0) * G;
+            }
+
+            // Monte Carlo estimator: scale by (total_paths / n_sampled)
+            double scaling = (double)total_paths / (double)n_paths_sampled;
+            upper_bound_path_specific = lower_bound + discount * scaling * sum_path_specific;
+        }
+    }
+
+    return Rcpp::List::create(
+        Rcpp::Named("lower_bound") = lower_bound,
+        Rcpp::Named("upper_bound_global") = upper_bound_global,
+        Rcpp::Named("upper_bound_path_specific") = upper_bound_path_specific,
+        Rcpp::Named("rho_star") = rho_star,
+        Rcpp::Named("EQ_G") = EQ_G,
+        Rcpp::Named("V0_G") = lower_bound,
+        Rcpp::Named("n_paths_sampled") = n_paths_sampled
     );
 }
