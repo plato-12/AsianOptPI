@@ -2,7 +2,7 @@
 % Please edit documentation in R/arithmetic_asian.R
 \name{arithmetic_asian_bounds}
 \alias{arithmetic_asian_bounds}
-\title{Bounds for Arithmetic Asian Call Option with Price Impact}
+\title{Bounds for Arithmetic Asian Option with Price Impact}
 \usage{
 arithmetic_asian_bounds(
   S0,
@@ -14,6 +14,7 @@ arithmetic_asian_bounds(
   v_u,
   v_d,
   n,
+  option_type = "call",
   compute_path_specific = FALSE,
   max_sample_size = 1e+05,
   sample_fraction = 0.1,
@@ -38,6 +39,8 @@ arithmetic_asian_bounds(
 \item{v_d}{Hedging volume on down move (non-negative)}
 
 \item{n}{Number of time steps (positive integer, recommended n <= 20)}
+
+\item{option_type}{Character; either "call" (default) or "put"}
 
 \item{compute_path_specific}{Logical. If TRUE, computes the tighter path-specific
 upper bound by sampling paths. Default is FALSE.}
@@ -64,13 +67,16 @@ List containing:
 }
 }
 \description{
-Computes lower and upper bounds for the arithmetic Asian call option
+Computes lower and upper bounds for the arithmetic Asian option (call or put)
 using the relationship between arithmetic and geometric means (Jensen's
 inequality).
 }
 \details{
 The arithmetic Asian option has payoff:
-\deqn{V_n = \max(0, A_n - K)}
+\itemize{
+\item Call: \eqn{V_n = \max(0, A_n - K)}
+\item Put: \eqn{V_n = \max(0, K - A_n)}
+}
 where \eqn{A_n = \frac{1}{n+1}\sum_{i=0}^{n} S_i}
 
 Since \eqn{A_n \geq G_n} (AM-GM inequality), we have:
@@ -96,13 +102,19 @@ For large \eqn{n}, the path-specific bound is estimated via random sampling
 of paths to maintain computational efficiency.
 }
 \examples{
-# Compute basic bounds (global bound only)
+# Compute basic bounds (global bound only) for call option
 bounds <- arithmetic_asian_bounds(
   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-  lambda = 0.1, v_u = 1, v_d = 1, n = 3
+  lambda = 0.1, v_u = 1, v_d = 1, n = 3, option_type = "call"
 )
 
 print(bounds)
+
+# Compute bounds for put option
+bounds_put <- arithmetic_asian_bounds(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1, n = 3, option_type = "put"
+)
 
 # Compute with path-specific bound
 bounds_ps <- arithmetic_asian_bounds(

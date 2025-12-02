@@ -33,9 +33,9 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
     return all_paths;
 }
 
-//' Price Geometric Asian Call Option with Price Impact
+//' Price Geometric Asian Option with Price Impact
 //'
-//' Computes the exact price of a geometric Asian call option using the
+//' Computes the exact price of a geometric Asian option (call or put) using the
 //' binomial tree model with price impact from hedging activities.
 //'
 //' @param S0 Initial stock price (positive)
@@ -47,14 +47,16 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
 //' @param v_u Hedging volume on up move (non-negative)
 //' @param v_d Hedging volume on down move (non-negative)
 //' @param n Number of time steps (positive integer)
+//' @param option_type Type of option: "call" or "put" (default: "call")
 //'
-//' @return Geometric Asian call option price
+//' @return Geometric Asian option price
 //'
 //' @details
 //' The function enumerates all 2^n possible price paths and computes:
 //' \itemize{
 //'   \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
-//'   \item Payoff: \eqn{\max(0, G - K)}
+//'   \item Call payoff: \eqn{\max(0, G - K)}
+//'   \item Put payoff: \eqn{\max(0, K - G)}
 //'   \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
 //' }
 //'
@@ -70,10 +72,16 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
 //'
 //' @examples
 //' \dontrun{
-//' # Basic example with 3 time steps
+//' # Call option example with 3 time steps
 //' price_geometric_asian_cpp(
 //'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-//'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3
+//'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "call"
+//' )
+//'
+//' # Put option example
+//' price_geometric_asian_cpp(
+//'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+//'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "put"
 //' )
 //' }
 //'
@@ -81,8 +89,14 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
 // [[Rcpp::export]]
 double price_geometric_asian_cpp(
     double S0, double K, double r, double u, double d,
-    double lambda, double v_u, double v_d, int n
+    double lambda, double v_u, double v_d, int n,
+    std::string option_type = "call"
 ) {
+    // Validate option_type
+    if (option_type != "call" && option_type != "put") {
+        Rcpp::stop("option_type must be either 'call' or 'put'");
+    }
+
     // Compute adjusted factors and risk-neutral probability
     AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
@@ -105,8 +119,13 @@ double price_geometric_asian_cpp(
         // Compute geometric average
         double G = geometric_mean(prices);
 
-        // Compute payoff
-        double payoff = std::max(0.0, G - K);
+        // Compute payoff based on option type
+        double payoff;
+        if (option_type == "call") {
+            payoff = std::max(0.0, G - K);
+        } else {
+            payoff = std::max(0.0, K - G);
+        }
 
         // Count number of up moves
         int n_ups = 0;

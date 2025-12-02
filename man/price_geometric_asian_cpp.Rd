@@ -2,9 +2,20 @@
 % Please edit documentation in R/RcppExports.R
 \name{price_geometric_asian_cpp}
 \alias{price_geometric_asian_cpp}
-\title{Price Geometric Asian Call Option with Price Impact}
+\title{Price Geometric Asian Option with Price Impact}
 \usage{
-price_geometric_asian_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
+price_geometric_asian_cpp(
+  S0,
+  K,
+  r,
+  u,
+  d,
+  lambda,
+  v_u,
+  v_d,
+  n,
+  option_type = "call"
+)
 }
 \arguments{
 \item{S0}{Initial stock price (positive)}
@@ -24,19 +35,22 @@ price_geometric_asian_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
 \item{v_d}{Hedging volume on down move (non-negative)}
 
 \item{n}{Number of time steps (positive integer)}
+
+\item{option_type}{Type of option: "call" or "put" (default: "call")}
 }
 \value{
-Geometric Asian call option price
+Geometric Asian option price
 }
 \description{
-Computes the exact price of a geometric Asian call option using the
+Computes the exact price of a geometric Asian option (call or put) using the
 binomial tree model with price impact from hedging activities.
 }
 \details{
 The function enumerates all 2^n possible price paths and computes:
 \itemize{
 \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
-\item Payoff: \eqn{\max(0, G - K)}
+\item Call payoff: \eqn{\max(0, G - K)}
+\item Put payoff: \eqn{\max(0, K - G)}
 \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
 }
 
@@ -48,10 +62,16 @@ Price impact modifies the up and down factors:
 }
 \examples{
 \dontrun{
-# Basic example with 3 time steps
+# Call option example with 3 time steps
 price_geometric_asian_cpp(
   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-  lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3
+  lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "call"
+)
+
+# Put option example
+price_geometric_asian_cpp(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "put"
 )
 }
 

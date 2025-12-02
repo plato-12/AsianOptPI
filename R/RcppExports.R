@@ -14,9 +14,9 @@ NULL
 #' @return rho(omega) = exp((S_M - S_m)^2 / (4 * S_m * S_M))
 NULL
 
-#' Compute Bounds for Arithmetic Asian Call Option
+#' Compute Bounds for Arithmetic Asian Option
 #'
-#' Computes lower and upper bounds for the arithmetic Asian call option
+#' Computes lower and upper bounds for the arithmetic Asian option (call or put)
 #' using Jensen's inequality and the relationship between arithmetic
 #' and geometric means.
 #'
@@ -29,6 +29,7 @@ NULL
 #' @param v_u Hedging volume on up move
 #' @param v_d Hedging volume on down move
 #' @param n Number of time steps
+#' @param option_type Type of option: "call" or "put" (default: "call")
 #'
 #' @return List containing:
 #' \itemize{
@@ -46,8 +47,8 @@ NULL
 #' where \eqn{rho^* = \exp((u_{tilde}^n - d_{tilde}^n)^2 / (4 \cdot u_{tilde}^n \cdot d_{tilde}^n))}
 #'
 #' @export
-arithmetic_asian_bounds_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
-    .Call(`_AsianOptPI_arithmetic_asian_bounds_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
+arithmetic_asian_bounds_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, option_type = "call") {
+    .Call(`_AsianOptPI_arithmetic_asian_bounds_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, option_type)
 }
 
 #' Compute Arithmetic Asian Bounds with Path-Specific Upper Bound
@@ -67,12 +68,13 @@ arithmetic_asian_bounds_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' @param compute_path_specific If TRUE, compute path-specific bound
 #' @param max_sample_size Maximum number of paths to sample (default 100000)
 #' @param sample_fraction Fraction of paths to sample (default 0.1 = 10%)
+#' @param option_type Type of option: "call" or "put" (default: "call")
 #'
 #' @return List containing bounds and diagnostic information
 #'
 #' @export
-arithmetic_asian_bounds_extended_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, compute_path_specific = FALSE, max_sample_size = 100000L, sample_fraction = 0.1) {
-    .Call(`_AsianOptPI_arithmetic_asian_bounds_extended_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, compute_path_specific, max_sample_size, sample_fraction)
+arithmetic_asian_bounds_extended_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, compute_path_specific = FALSE, max_sample_size = 100000L, sample_fraction = 0.1, option_type = "call") {
+    .Call(`_AsianOptPI_arithmetic_asian_bounds_extended_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, compute_path_specific, max_sample_size, sample_fraction, option_type)
 }
 
 #' Price European Call Option with Price Impact
@@ -174,9 +176,9 @@ price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     .Call(`_AsianOptPI_price_european_put_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
 }
 
-#' Price Geometric Asian Call Option with Price Impact
+#' Price Geometric Asian Option with Price Impact
 #'
-#' Computes the exact price of a geometric Asian call option using the
+#' Computes the exact price of a geometric Asian option (call or put) using the
 #' binomial tree model with price impact from hedging activities.
 #'
 #' @param S0 Initial stock price (positive)
@@ -188,14 +190,16 @@ price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' @param v_u Hedging volume on up move (non-negative)
 #' @param v_d Hedging volume on down move (non-negative)
 #' @param n Number of time steps (positive integer)
+#' @param option_type Type of option: "call" or "put" (default: "call")
 #'
-#' @return Geometric Asian call option price
+#' @return Geometric Asian option price
 #'
 #' @details
 #' The function enumerates all 2^n possible price paths and computes:
 #' \itemize{
 #'   \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
-#'   \item Payoff: \eqn{\max(0, G - K)}
+#'   \item Call payoff: \eqn{\max(0, G - K)}
+#'   \item Put payoff: \eqn{\max(0, K - G)}
 #'   \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
 #' }
 #'
@@ -211,16 +215,22 @@ price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #'
 #' @examples
 #' \dontrun{
-#' # Basic example with 3 time steps
+#' # Call option example with 3 time steps
 #' price_geometric_asian_cpp(
 #'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3
+#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "call"
+#' )
+#'
+#' # Put option example
+#' price_geometric_asian_cpp(
+#'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 3, option_type = "put"
 #' )
 #' }
 #'
 #' @export
-price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
-    .Call(`_AsianOptPI_price_geometric_asian_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
+price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, option_type = "call") {
+    .Call(`_AsianOptPI_price_geometric_asian_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, option_type)
 }
 
 #' Kemna-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option

@@ -1,6 +1,6 @@
-#' Price Geometric Asian Call Option with Price Impact
+#' Price Geometric Asian Option with Price Impact
 #'
-#' Computes the exact price of a geometric Asian call option using the
+#' Computes the exact price of a geometric Asian option (call or put) using the
 #' Cox-Ross-Rubinstein (CRR) binomial model with price impact from
 #' hedging activities.
 #'
@@ -13,11 +13,15 @@
 #' @param v_u Hedging volume on up move (non-negative)
 #' @param v_d Hedging volume on down move (non-negative)
 #' @param n Number of time steps (positive integer, recommended n <= 20)
+#' @param option_type Character; either "call" (default) or "put"
 #' @param validate Logical; if TRUE, performs input validation
 #'
 #' @details
 #' The geometric Asian option payoff is:
-#' \deqn{V_n = \max(0, G_n - K)}
+#' \itemize{
+#'   \item Call: \eqn{V_n = \max(0, G_n - K)}
+#'   \item Put: \eqn{V_n = \max(0, K - G_n)}
+#' }
 #' where \eqn{G_n = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
 #'
 #' Price impact modifies the stock dynamics:
@@ -30,20 +34,20 @@
 #' The function enumerates all \eqn{2^n} possible price paths, making it
 #' computationally intensive for large n.
 #'
-#' @return Geometric Asian call option price (numeric)
+#' @return Geometric Asian option price (numeric)
 #' @export
 #'
 #' @examples
-#' # Basic example with no price impact
+#' # Call option with no price impact
 #' price_geometric_asian(
 #'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-#'   lambda = 0, v_u = 0, v_d = 0, n = 3
+#'   lambda = 0, v_u = 0, v_d = 0, n = 3, option_type = "call"
 #' )
 #'
-#' # Example with price impact
+#' # Put option with price impact
 #' price_geometric_asian(
 #'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
-#'   lambda = 0.1, v_u = 1, v_d = 1, n = 3
+#'   lambda = 0.1, v_u = 1, v_d = 1, n = 3, option_type = "put"
 #' )
 #'
 #' @references
@@ -53,14 +57,18 @@
 #'
 #' @seealso \code{\link{arithmetic_asian_bounds}}, \code{\link{compute_p_eff}}
 price_geometric_asian <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
+                                   option_type = "call",
                                    validate = TRUE) {
   # Input validation
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
+  # Validate option_type
+  option_type <- match.arg(option_type, c("call", "put"))
+
   # Call C++ implementation
-  result <- price_geometric_asian_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
+  result <- price_geometric_asian_cpp(S0, K, r, u, d, lambda, v_u, v_d, n, option_type)
 
   return(result)
 }

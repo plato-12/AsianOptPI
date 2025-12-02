@@ -16,7 +16,8 @@ arithmetic_asian_bounds_extended_cpp(
   n,
   compute_path_specific = FALSE,
   max_sample_size = 100000L,
-  sample_fraction = 0.1
+  sample_fraction = 0.1,
+  option_type = "call"
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ arithmetic_asian_bounds_extended_cpp(
 \item{max_sample_size}{Maximum number of paths to sample (default 100000)}
 
 \item{sample_fraction}{Fraction of paths to sample (default 0.1 = 10\%)}
+
+\item{option_type}{Type of option: "call" or "put" (default: "call")}
 }
 \value{
 List containing bounds and diagnostic information

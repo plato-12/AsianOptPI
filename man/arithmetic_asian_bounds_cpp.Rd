@@ -2,9 +2,20 @@
 % Please edit documentation in R/RcppExports.R
 \name{arithmetic_asian_bounds_cpp}
 \alias{arithmetic_asian_bounds_cpp}
-\title{Compute Bounds for Arithmetic Asian Call Option}
+\title{Compute Bounds for Arithmetic Asian Option}
 \usage{
-arithmetic_asian_bounds_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
+arithmetic_asian_bounds_cpp(
+  S0,
+  K,
+  r,
+  u,
+  d,
+  lambda,
+  v_u,
+  v_d,
+  n,
+  option_type = "call"
+)
 }
 \arguments{
 \item{S0}{Initial stock price}
@@ -24,6 +35,8 @@ arithmetic_asian_bounds_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
 \item{v_d}{Hedging volume on down move}
 
 \item{n}{Number of time steps}
+
+\item{option_type}{Type of option: "call" or "put" (default: "call")}
 }
 \value{
 List containing:
@@ -35,7 +48,7 @@ List containing:
 }
 }
 \description{
-Computes lower and upper bounds for the arithmetic Asian call option
+Computes lower and upper bounds for the arithmetic Asian option (call or put)
 using Jensen's inequality and the relationship between arithmetic
 and geometric means.
 }

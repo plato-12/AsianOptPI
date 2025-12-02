@@ -9,9 +9,9 @@
 // External function from geometric_asian.cpp
 std::vector<std::vector<int>> generate_all_paths(int n);
 
-//' Compute Bounds for Arithmetic Asian Call Option
+//' Compute Bounds for Arithmetic Asian Option
 //'
-//' Computes lower and upper bounds for the arithmetic Asian call option
+//' Computes lower and upper bounds for the arithmetic Asian option (call or put)
 //' using Jensen's inequality and the relationship between arithmetic
 //' and geometric means.
 //'
@@ -24,6 +24,7 @@ std::vector<std::vector<int>> generate_all_paths(int n);
 //' @param v_u Hedging volume on up move
 //' @param v_d Hedging volume on down move
 //' @param n Number of time steps
+//' @param option_type Type of option: "call" or "put" (default: "call")
 //'
 //' @return List containing:
 //' \itemize{
@@ -44,8 +45,13 @@ std::vector<std::vector<int>> generate_all_paths(int n);
 // [[Rcpp::export]]
 Rcpp::List arithmetic_asian_bounds_cpp(
     double S0, double K, double r, double u, double d,
-    double lambda, double v_u, double v_d, int n
+    double lambda, double v_u, double v_d, int n,
+    std::string option_type = "call"
 ) {
+    // Validate option_type
+    if (option_type != "call" && option_type != "put") {
+        Rcpp::stop("option_type must be either 'call' or 'put'");
+    }
     // Compute adjusted factors
     AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
@@ -64,7 +70,14 @@ Rcpp::List arithmetic_asian_bounds_cpp(
                                                          factors.d_tilde);
 
         double G = geometric_mean(prices);
-        double payoff = std::max(0.0, G - K);
+
+        // Compute payoff based on option type
+        double payoff;
+        if (option_type == "call") {
+            payoff = std::max(0.0, G - K);
+        } else {
+            payoff = std::max(0.0, K - G);
+        }
 
         int n_ups = 0;
         for (int move : path) {
@@ -144,6 +157,7 @@ double compute_path_rho(const std::vector<double>& prices) {
 //' @param compute_path_specific If TRUE, compute path-specific bound
 //' @param max_sample_size Maximum number of paths to sample (default 100000)
 //' @param sample_fraction Fraction of paths to sample (default 0.1 = 10%)
+//' @param option_type Type of option: "call" or "put" (default: "call")
 //'
 //' @return List containing bounds and diagnostic information
 //'
@@ -154,8 +168,13 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
     double lambda, double v_u, double v_d, int n,
     bool compute_path_specific = false,
     int max_sample_size = 100000,
-    double sample_fraction = 0.1
+    double sample_fraction = 0.1,
+    std::string option_type = "call"
 ) {
+    // Validate option_type
+    if (option_type != "call" && option_type != "put") {
+        Rcpp::stop("option_type must be either 'call' or 'put'");
+    }
     // Compute adjusted factors
     AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
@@ -174,7 +193,14 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
                                                          factors.d_tilde);
 
         double G = geometric_mean(prices);
-        double payoff = std::max(0.0, G - K);
+
+        // Compute payoff based on option type
+        double payoff;
+        if (option_type == "call") {
+            payoff = std::max(0.0, G - K);
+        } else {
+            payoff = std::max(0.0, K - G);
+        }
 
         int n_ups = 0;
         for (int move : path) {
