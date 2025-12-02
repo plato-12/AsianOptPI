@@ -31,9 +31,9 @@
 //' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
 //'
 //' Price impact modifies the up and down factors:
-//' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-//' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-//' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+//' - Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+//' - Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+//' - Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 //'
 //' @references
 //' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
@@ -55,8 +55,8 @@ double price_european_call_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute effective factors and risk-neutral probability
-    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+    // Compute adjusted factors and risk-neutral probability
+    AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
     // Discount factor
     double discount = std::pow(r, -n);
@@ -74,8 +74,8 @@ double price_european_call_cpp(
 
         // Binomial probability of reaching this state
         double binom_coeff = binomial_coefficient(n, k);
-        double prob = binom_coeff * std::pow(factors.p_eff, k) *
-                     std::pow(1.0 - factors.p_eff, n - k);
+        double prob = binom_coeff * std::pow(factors.p_adj, k) *
+                     std::pow(1.0 - factors.p_adj, n - k);
 
         // Add to option value
         option_value += prob * payoff;
@@ -112,9 +112,9 @@ double price_european_call_cpp(
 //' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
 //'
 //' Price impact modifies the up and down factors:
-//' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-//' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-//' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+//' - Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+//' - Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+//' - Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 //'
 //' @references
 //' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
@@ -136,8 +136,8 @@ double price_european_put_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute effective factors and risk-neutral probability
-    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+    // Compute adjusted factors and risk-neutral probability
+    AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
     // Discount factor
     double discount = std::pow(r, -n);
@@ -155,8 +155,8 @@ double price_european_put_cpp(
 
         // Binomial probability of reaching this state
         double binom_coeff = binomial_coefficient(n, k);
-        double prob = binom_coeff * std::pow(factors.p_eff, k) *
-                     std::pow(1.0 - factors.p_eff, n - k);
+        double prob = binom_coeff * std::pow(factors.p_adj, k) *
+                     std::pow(1.0 - factors.p_adj, n - k);
 
         // Add to option value
         option_value += prob * payoff;

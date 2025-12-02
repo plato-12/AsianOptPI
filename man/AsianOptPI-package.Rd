@@ -15,8 +15,8 @@ Cox-Ross-Rubinstein (CRR) model with the replicating portfolio method.
 \itemize{
 \item \code{\link{price_geometric_asian}}: Exact pricing for geometric Asian calls
 \item \code{\link{arithmetic_asian_bounds}}: Bounds for arithmetic Asian calls
-\item \code{\link{compute_p_eff}}: Compute effective risk-neutral probability
-\item \code{\link{compute_effective_factors}}: Compute modified up/down factors
+\item \code{\link{compute_p_adj}}: Compute adjusted risk-neutral probability
+\item \code{\link{compute_adjusted_factors}}: Compute modified up/down factors
 \item \code{\link{check_no_arbitrage}}: Validate no-arbitrage condition
 }
 }
@@ -28,9 +28,9 @@ When market makers hedge options, their trading volume causes price movements:
 
 This modifies the binomial tree dynamics:
 \itemize{
-\item Effective up move: \eqn{S \to S \cdot u \cdot e^{\lambda v^u}}
-\item Effective down move: \eqn{S \to S \cdot d \cdot e^{-\lambda v^d}}
-\item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+\item Adjusted up move: \eqn{S \to S \cdot u \cdot e^{\lambda v^u}}
+\item Adjusted down move: \eqn{S \to S \cdot d \cdot e^{-\lambda v^d}}
+\item Risk-neutral probability: \eqn{p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 }
 
@@ -56,7 +56,7 @@ where \eqn{\rho^* = \exp\left[\frac{(\tilde{u}^n - \tilde{d}^n)^2}{4\tilde{u}^n\
 
 For valid pricing, the model requires:
 \deqn{\tilde{d} < r < \tilde{u}}
-This ensures the effective risk-neutral probability \eqn{p^{eff} \in [0,1]}.
+This ensures the adjusted risk-neutral probability \eqn{p^{adj} \in [0,1]}.
 All pricing functions validate this condition automatically.
 }
 
@@ -92,9 +92,9 @@ print(bounds)
 check_no_arbitrage(r = 1.05, u = 1.2, d = 0.8,
                    lambda = 0.1, v_u = 1, v_d = 1)
 
-# Compute effective factors
-factors <- compute_effective_factors(u = 1.2, d = 0.8,
-                                     lambda = 0.1, v_u = 1, v_d = 1)
+# Compute adjusted factors
+factors <- compute_adjusted_factors(u = 1.2, d = 0.8,
+                                    lambda = 0.1, v_u = 1, v_d = 1)
 print(factors)
 }
 \references{

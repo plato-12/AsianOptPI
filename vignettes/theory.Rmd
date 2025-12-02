@@ -58,9 +58,9 @@ $$\begin{aligned}
 \tilde{d} &= d \cdot e^{-\lambda v^d}
 \end{aligned}$$
 
-The effective risk-neutral probability becomes:
+The adjusted risk-neutral probability becomes:
 
-$$p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$$
+$$p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$$
 
 ## Replicating Portfolio Method
 

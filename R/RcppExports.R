@@ -103,9 +103,9 @@ arithmetic_asian_bounds_extended_cpp <- function(S0, K, r, u, d, lambda, v_u, v_
 #' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
 #'
 #' Price impact modifies the up and down factors:
-#' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-#' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-#' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+#' - Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+#' - Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+#' - Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 #'
 #' @references
 #' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
@@ -151,9 +151,9 @@ price_european_call_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
 #'
 #' Price impact modifies the up and down factors:
-#' - Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-#' - Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-#' - Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+#' - Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+#' - Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+#' - Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 #'
 #' @references
 #' Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing:
@@ -201,8 +201,8 @@ price_european_put_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #'
 #' Price impact modifies the up and down factors:
 #' \itemize{
-#'   \item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
-#'   \item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+#'   \item Adjusted up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+#'   \item Adjusted down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
 #' }
 #'
 #' @references

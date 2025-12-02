@@ -46,8 +46,8 @@ Rcpp::List arithmetic_asian_bounds_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute effective factors
-    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+    // Compute adjusted factors
+    AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
     // Generate all paths
     std::vector<std::vector<int>> all_paths = generate_all_paths(n);
@@ -71,8 +71,8 @@ Rcpp::List arithmetic_asian_bounds_cpp(
             if (move == 1) n_ups++;
         }
 
-        double path_prob = std::pow(factors.p_eff, n_ups) *
-                          std::pow(1.0 - factors.p_eff, n - n_ups);
+        double path_prob = std::pow(factors.p_adj, n_ups) *
+                          std::pow(1.0 - factors.p_adj, n - n_ups);
 
         lower_bound += path_prob * payoff;
         EQ_G += path_prob * G;
@@ -156,8 +156,8 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
     int max_sample_size = 100000,
     double sample_fraction = 0.1
 ) {
-    // Compute effective factors
-    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+    // Compute adjusted factors
+    AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
     // Generate all paths
     std::vector<std::vector<int>> all_paths = generate_all_paths(n);
@@ -181,8 +181,8 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
             if (move == 1) n_ups++;
         }
 
-        double path_prob = std::pow(factors.p_eff, n_ups) *
-                          std::pow(1.0 - factors.p_eff, n - n_ups);
+        double path_prob = std::pow(factors.p_adj, n_ups) *
+                          std::pow(1.0 - factors.p_adj, n - n_ups);
 
         lower_bound += path_prob * payoff;
         EQ_G += path_prob * G;
@@ -232,8 +232,8 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
                     if (move == 1) n_ups++;
                 }
 
-                double path_prob = std::pow(factors.p_eff, n_ups) *
-                                  std::pow(1.0 - factors.p_eff, n - n_ups);
+                double path_prob = std::pow(factors.p_adj, n_ups) *
+                                  std::pow(1.0 - factors.p_adj, n - n_ups);
 
                 sum_path_specific += path_prob * (rho_omega - 1.0) * G;
             }
@@ -274,8 +274,8 @@ Rcpp::List arithmetic_asian_bounds_extended_cpp(
                     if (move == 1) n_ups++;
                 }
 
-                double path_prob = std::pow(factors.p_eff, n_ups) *
-                                  std::pow(1.0 - factors.p_eff, n - n_ups);
+                double path_prob = std::pow(factors.p_adj, n_ups) *
+                                  std::pow(1.0 - factors.p_adj, n - n_ups);
 
                 sum_path_specific += path_prob * (rho_omega - 1.0) * G;
             }

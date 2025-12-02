@@ -34,7 +34,7 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     stop("Up factor u must be greater than down factor d")
   }
 
-  # Compute effective factors
+  # Compute adjusted factors
   u_tilde <- u * exp(lambda * v_u)
   d_tilde <- d * exp(-lambda * v_d)
 
@@ -54,12 +54,12 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
   }
 
   # Compute and check risk-neutral probability
-  p_eff <- (r - d_tilde) / (u_tilde - d_tilde)
+  p_adj <- (r - d_tilde) / (u_tilde - d_tilde)
 
-  if (p_eff < 0 || p_eff > 1) {
+  if (p_adj < 0 || p_adj > 1) {
     stop(sprintf(
-      "Effective risk-neutral probability out of bounds: p_eff = %.4f (must be in [0,1])",
-      p_eff
+      "Adjusted risk-neutral probability out of bounds: p_adj = %.4f (must be in [0,1])",
+      p_adj
     ))
   }
 

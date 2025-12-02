@@ -29,16 +29,16 @@ When market makers hedge an option by trading volume $v$, the stock price is imp
 $$\Delta S = \lambda v \cdot \text{sign}(\text{trade})$$
 
 This modifies the binomial tree dynamics:
-- **Effective up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$
-- **Effective down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$
-- **Effective risk-neutral probability**: $p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
+- **Adjusted up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$
+- **Adjusted down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$
+- **Adjusted risk-neutral probability**: $p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
 
 ### No-Arbitrage Constraint
 
 For valid pricing, the following **must** hold:
 $$\boxed{\tilde{d} < r < \tilde{u}}$$
 
-This ensures $p^{eff} \in [0,1]$. Under standard assumptions ($d < r < u$ and $v^u, v^d \geq 0$), this is automatically satisfied.
+This ensures $p^{adj} \in [0,1]$. Under standard assumptions ($d < r < u$ and $v^u, v^d \geq 0$), this is automatically satisfied.
 
 ### Geometric Asian Options
 
@@ -55,7 +55,7 @@ where $A(\text{path}) = \sum_{i=0}^{n} a_i$ (sum of cumulative up-counts) and $a
 3. Path probabilities follow binomial distribution, but payoffs do not
 
 **Pricing Formula**:
-$$V_0 = \frac{1}{r^n} \sum_{\omega \in \{U,D\}^n} \left(p^{eff}\right)^{\#U(\omega)} \left(1-p^{eff}\right)^{n-\#U(\omega)} \max[0, G(\omega) - K]$$
+$$V_0 = \frac{1}{r^n} \sum_{\omega \in \{U,D\}^n} \left(p^{adj}\right)^{\#U(\omega)} \left(1-p^{adj}\right)^{n-\#U(\omega)} \max[0, G(\omega) - K]$$
 
 ### Arithmetic Asian Options
 
@@ -217,7 +217,7 @@ This is documented in Theory.md and must be enforced in validation.
 ### C++ Layer (`src/`)
 
 **`utils.cpp`**:
-- `compute_effective_factors()`: Returns `{u_tilde, d_tilde, p_eff}`
+- `compute_adjusted_factors()`: Returns `{u_tilde, d_tilde, p_adj}`
 - `geometric_mean()`, `arithmetic_mean()`: Average computations
 - `generate_price_path()`: Constructs $S_0, S_1, \ldots, S_n$ for a given path
 
@@ -259,8 +259,8 @@ This is documented in Theory.md and must be enforced in validation.
 - `print.arithmetic_bounds()`: Pretty printing method
 
 **`price_impact_utils.R`**:
-- `compute_p_eff()`: Calculate $p^{eff}$
-- `compute_effective_factors()`: Return $\{\tilde{u}, \tilde{d}\}$
+- `compute_p_adj()`: Calculate $p^{eff}$
+- `compute_adjusted_factors()`: Return $\{\tilde{u}, \tilde{d}\}$
 - `check_no_arbitrage()`: Boolean validator
 
 ## Testing Strategy
@@ -408,7 +408,7 @@ PKG_CXXFLAGS = -DRCPP_USE_GLOBAL_ROSTREAM
 - ✅ R wrapper functions
   - `price_geometric_asian()`
   - `arithmetic_asian_bounds()`
-  - Utility functions (compute_p_eff, check_no_arbitrage)
+  - Utility functions (compute_p_adj, check_no_arbitrage)
 - ✅ Input validation (`validation.R`)
 - ✅ Documentation (Roxygen2, all functions documented)
 - ✅ Testing (166 tests passing)

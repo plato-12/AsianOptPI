@@ -18,14 +18,14 @@ This is the initial development release of AsianOptPI, implementing binomial tre
   - Returns comprehensive bound information (lower, upper, ρ*, E^Q[G_n])
 
 #### Utility Functions
-- `compute_p_eff()`: Compute effective risk-neutral probability with price impact
-- `compute_effective_factors()`: Calculate modified up/down factors (ũ, d̃)
+- `compute_p_adj()`: Compute adjusted risk-neutral probability with price impact
+- `compute_adjusted_factors()`: Calculate modified up/down factors (ũ, d̃)
 - `check_no_arbitrage()`: Validate no-arbitrage condition d̃ < r < ũ
 
 #### Price Impact Model
 - Incorporates hedging-induced stock price movements: ΔS = λ·v·sign(trade)
-- Modifies binomial tree with effective factors: ũ = u·e^(λv^u), d̃ = d·e^(-λv^d)
-- Adjusts risk-neutral probability: p^eff = (r - d̃)/(ũ - d̃)
+- Modifies binomial tree with adjusted factors: ũ = u·e^(λv^u), d̃ = d·e^(-λv^d)
+- Adjusts risk-neutral probability: p^adj = (r - d̃)/(ũ - d̃)
 
 ### Input Validation
 
@@ -34,7 +34,7 @@ Comprehensive parameter validation including:
 - Non-negativity for price impact parameters (λ, v_u, v_d ≥ 0)
 - Ordering constraint (u > d)
 - **Critical no-arbitrage validation** (d̃ < r < ũ)
-- Risk-neutral probability bounds (p^eff ∈ [0,1])
+- Risk-neutral probability bounds (p^adj ∈ [0,1])
 - Performance warnings for large n (> 20)
 
 ### Documentation
@@ -66,7 +66,7 @@ Comprehensive parameter validation including:
 
 #### C++ Core (src/)
 - `utils.cpp`: Core utility functions
-  - Effective factor calculations
+  - Adjusted factor calculations
   - Geometric and arithmetic mean computations
   - Price path generation
 

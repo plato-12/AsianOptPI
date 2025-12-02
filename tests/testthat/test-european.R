@@ -69,7 +69,7 @@ test_that("European call n=1 case matches manual calculation", {
   # Compute manually
   u_tilde <- u * exp(lambda * v_u)
   d_tilde <- d * exp(-lambda * v_d)
-  p_eff <- (r - d_tilde) / (u_tilde - d_tilde)
+  p_adj <- (r - d_tilde) / (u_tilde - d_tilde)
 
   # Two terminal states
   S_u <- S0 * u_tilde
@@ -78,7 +78,7 @@ test_that("European call n=1 case matches manual calculation", {
   payoff_u <- max(0, S_u - K)
   payoff_d <- max(0, S_d - K)
 
-  expected_price <- (p_eff * payoff_u + (1 - p_eff) * payoff_d) / r
+  expected_price <- (p_adj * payoff_u + (1 - p_adj) * payoff_d) / r
 
   computed_price <- price_european_call(S0, K, r, u, d, lambda, v_u, v_d, 1)
 
@@ -218,7 +218,7 @@ test_that("European put n=1 case matches manual calculation", {
   # Compute manually
   u_tilde <- u * exp(lambda * v_u)
   d_tilde <- d * exp(-lambda * v_d)
-  p_eff <- (r - d_tilde) / (u_tilde - d_tilde)
+  p_adj <- (r - d_tilde) / (u_tilde - d_tilde)
 
   # Two terminal states
   S_u <- S0 * u_tilde
@@ -227,7 +227,7 @@ test_that("European put n=1 case matches manual calculation", {
   payoff_u <- max(0, K - S_u)
   payoff_d <- max(0, K - S_d)
 
-  expected_price <- (p_eff * payoff_u + (1 - p_eff) * payoff_d) / r
+  expected_price <- (p_adj * payoff_u + (1 - p_adj) * payoff_d) / r
 
   computed_price <- price_european_put(S0, K, r, u, d, lambda, v_u, v_d, 1)
 

@@ -78,8 +78,8 @@ check_no_arbitrage(
 )
 # [1] TRUE
 
-# Compute effective factors with price impact
-factors <- compute_effective_factors(
+# Compute adjusted factors with price impact
+factors <- compute_adjusted_factors(
   u = 1.2, d = 0.8,
   lambda = 0.1, v_u = 1, v_d = 1
 )
@@ -90,12 +90,12 @@ print(factors)
 # $d_tilde
 # [1] 0.7238699
 
-# Compute effective risk-neutral probability
-p_eff <- compute_p_eff(
+# Compute adjusted risk-neutral probability
+p_adj <- compute_p_adj(
   r = 1.05, u = 1.2, d = 0.8,
   lambda = 0.1, v_u = 1, v_d = 1
 )
-print(p_eff)
+print(p_adj)
 # [1] 0.5414428
 ```
 
@@ -116,9 +116,9 @@ Where:
 
 This price impact modifies the standard CRR binomial tree:
 
-- **Effective up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$
-- **Effective down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$
-- **Effective risk-neutral probability**: $p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
+- **Adjusted up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$
+- **Adjusted down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$
+- **Adjusted risk-neutral probability**: $p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
 
 ### No-Arbitrage Condition
 
@@ -238,8 +238,8 @@ price_geometric_asian(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 25)
 - `arithmetic_asian_bounds()` - Upper and lower bounds for arithmetic options
 
 ### Utility Functions
-- `compute_p_eff()` - Effective risk-neutral probability
-- `compute_effective_factors()` - Modified up/down factors
+- `compute_p_adj()` - Adjusted risk-neutral probability
+- `compute_adjusted_factors()` - Modified up/down factors
 - `check_no_arbitrage()` - Validate pricing parameters
 
 ### Internal Functions

@@ -42,8 +42,8 @@ The function enumerates all 2^n possible price paths and computes:
 
 Price impact modifies the up and down factors:
 \itemize{
-\item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
-\item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+\item Adjusted up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+\item Adjusted down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
 }
 }
 \examples{

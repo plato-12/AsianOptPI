@@ -60,8 +60,8 @@ std::vector<std::vector<int>> generate_all_paths(int n) {
 //'
 //' Price impact modifies the up and down factors:
 //' \itemize{
-//'   \item Effective up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
-//'   \item Effective down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+//'   \item Adjusted up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+//'   \item Adjusted down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
 //' }
 //'
 //' @references
@@ -83,8 +83,8 @@ double price_geometric_asian_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute effective factors and risk-neutral probability
-    EffectiveFactors factors = compute_effective_factors(r, u, d, lambda, v_u, v_d);
+    // Compute adjusted factors and risk-neutral probability
+    AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
     // Generate all 2^n paths
     std::vector<std::vector<int>> all_paths = generate_all_paths(n);
@@ -115,8 +115,8 @@ double price_geometric_asian_cpp(
         }
 
         // Compute path probability
-        double path_prob = std::pow(factors.p_eff, n_ups) *
-                          std::pow(1.0 - factors.p_eff, n - n_ups);
+        double path_prob = std::pow(factors.p_adj, n_ups) *
+                          std::pow(1.0 - factors.p_adj, n - n_ups);
 
         // Add to option value
         option_value += path_prob * payoff;

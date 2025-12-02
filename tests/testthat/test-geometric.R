@@ -67,7 +67,7 @@ test_that("n=1 case matches manual calculation", {
   # Compute manually
   u_tilde <- u * exp(lambda * v_u)
   d_tilde <- d * exp(-lambda * v_d)
-  p_eff <- (r - d_tilde) / (u_tilde - d_tilde)
+  p_adj <- (r - d_tilde) / (u_tilde - d_tilde)
 
   # Two paths: U and D
   # Path U: S0 -> S0*u_tilde
@@ -80,7 +80,7 @@ test_that("n=1 case matches manual calculation", {
   G_D <- S0 * sqrt(d_tilde)
   payoff_D <- max(0, G_D - K)
 
-  expected_price <- (p_eff * payoff_U + (1 - p_eff) * payoff_D) / r
+  expected_price <- (p_adj * payoff_U + (1 - p_adj) * payoff_D) / r
 
   computed_price <- price_geometric_asian(S0, K, r, u, d, lambda, v_u, v_d, 1)
 

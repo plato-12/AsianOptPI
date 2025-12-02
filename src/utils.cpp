@@ -1,21 +1,21 @@
 #include "utils.h"
 
-EffectiveFactors compute_effective_factors(
+AdjustedFactors compute_adjusted_factors(
     double r, double u, double d,
     double lambda, double v_u, double v_d
 ) {
-    EffectiveFactors factors;
+    AdjustedFactors factors;
 
-    // Compute effective up and down factors
+    // Compute adjusted up and down factors
     factors.u_tilde = u * std::exp(lambda * v_u);
     factors.d_tilde = d * std::exp(-lambda * v_d);
 
-    // Compute effective risk-neutral probability
-    factors.p_eff = (r - factors.d_tilde) / (factors.u_tilde - factors.d_tilde);
+    // Compute adjusted risk-neutral probability
+    factors.p_adj = (r - factors.d_tilde) / (factors.u_tilde - factors.d_tilde);
 
     // Validation (should be done in R wrapper, but double-check)
-    if (factors.p_eff < 0.0 || factors.p_eff > 1.0) {
-        Rcpp::stop("Invalid risk-neutral probability: p_eff must be in [0,1]");
+    if (factors.p_adj < 0.0 || factors.p_adj > 1.0) {
+        Rcpp::stop("Invalid risk-neutral probability: p_adj must be in [0,1]");
     }
 
     return factors;

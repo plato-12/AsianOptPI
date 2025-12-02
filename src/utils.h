@@ -5,14 +5,14 @@
 #include <vector>
 #include <cmath>
 
-// Compute effective factors with price impact
-struct EffectiveFactors {
+// Compute adjusted factors with price impact
+struct AdjustedFactors {
     double u_tilde;
     double d_tilde;
-    double p_eff;
+    double p_adj;
 };
 
-EffectiveFactors compute_effective_factors(
+AdjustedFactors compute_adjusted_factors(
     double r, double u, double d,
     double lambda, double v_u, double v_d
 );

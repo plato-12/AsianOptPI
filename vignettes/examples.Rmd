@@ -140,14 +140,14 @@ grid()
 ## Example 6: Risk-Neutral Probability
 
 ```{r}
-# Compute effective factors
-factors <- compute_effective_factors(u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)
-p_eff <- compute_p_eff(r = 1.05, u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)
+# Compute adjusted factors
+factors <- compute_adjusted_factors(u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)
+p_adj <- compute_p_adj(r = 1.05, u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)
 
-cat("Effective Factors:\n")
+cat("Adjusted Factors:\n")
 cat("  u_tilde:", round(factors$u_tilde, 4), "\n")
 cat("  d_tilde:", round(factors$d_tilde, 4), "\n")
-cat("  p_eff:  ", round(p_eff, 4), "\n\n")
+cat("  p_adj:  ", round(p_adj, 4), "\n\n")
 
 # Verify no-arbitrage
 cat("No-arbitrage check: d̃ < r < ũ\n")

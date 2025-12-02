@@ -44,9 +44,9 @@ where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k 
 
 Price impact modifies the up and down factors:
 \itemize{
-\item Effective up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-\item Effective down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-\item Effective risk-neutral probability: \eqn{p_{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+\item Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+\item Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+\item Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 }
 \examples{
