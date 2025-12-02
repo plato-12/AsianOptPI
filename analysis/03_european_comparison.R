@@ -444,7 +444,7 @@ cat("   - Asian: Additional error from discrete vs continuous averaging\n\n")
 
 cat("3. Analytical Solutions:\n")
 cat("   - European: Exact Black-Scholes formula\n")
-cat("   - Asian (geometric): Kemma-Vorst approximation (continuous limit)\n")
+cat("   - Asian (geometric): Kemna-Vorst approximation (continuous limit)\n")
 cat("   - Asian (arithmetic): No closed form, use bounds\n\n")
 
 cat("PRACTICAL IMPLICATIONS:\n")

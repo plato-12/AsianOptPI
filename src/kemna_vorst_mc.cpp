@@ -2,9 +2,9 @@
 #include <cmath>
 using namespace Rcpp;
 
-//' Kemma-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option
+//' Kemna-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option
 //'
-//' Implements the Kemma-Vorst (1990) Monte Carlo method with variance reduction
+//' Implements the Kemna-Vorst (1990) Monte Carlo method with variance reduction
 //' using the geometric average as a control variate. This is the standard
 //' benchmark implementation WITHOUT price impact.
 //'
@@ -32,7 +32,7 @@ using namespace Rcpp;
 //' }
 //'
 //' @details
-//' The algorithm follows Kemma & Vorst (1990):
+//' The algorithm follows Kemna & Vorst (1990):
 //'
 //' 1. Generate price paths under risk-neutral dynamics:
 //'    \deqn{\log(S_{i+1}) = \log(S_i) + (r - \sigma^2/2)\Delta t + \sigma\sqrt{\Delta t} Z_i}
@@ -61,7 +61,7 @@ using namespace Rcpp;
 //' @examples
 //' \donttest{
 //' # Basic example
-//' result <- price_kemma_vorst_arithmetic_cpp(
+//' result <- price_kemna_vorst_arithmetic_cpp(
 //'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
 //'   T0 = 0, T = 1, n = 50, M = 10000,
 //'   option_type = "call"
@@ -72,7 +72,7 @@ using namespace Rcpp;
 //'
 //' @export
 // [[Rcpp::export]]
-List price_kemma_vorst_arithmetic_cpp(
+List price_kemna_vorst_arithmetic_cpp(
     double S0, double K, double r, double sigma,
     double T0, double T, int n, int M,
     std::string option_type = "call",
@@ -230,7 +230,7 @@ List price_kemma_vorst_arithmetic_cpp(
 }
 
 
-//' Kemma-Vorst Monte Carlo with Binomial Parameters
+//' Kemna-Vorst Monte Carlo with Binomial Parameters
 //'
 //' Alternative interface using discrete binomial parameters instead of
 //' continuous parameters.
@@ -246,11 +246,11 @@ List price_kemma_vorst_arithmetic_cpp(
 //' @param use_control_variate Boolean: use variance reduction
 //' @param seed Integer: random seed
 //'
-//' @return List with pricing results (same as price_kemma_vorst_arithmetic_cpp)
+//' @return List with pricing results (same as price_kemna_vorst_arithmetic_cpp)
 //'
 //' @export
 // [[Rcpp::export]]
-List price_kemma_vorst_arithmetic_binomial_cpp(
+List price_kemna_vorst_arithmetic_binomial_cpp(
     double S0, double K, double r, double u, double d,
     int n, int M,
     std::string option_type = "call",
@@ -267,7 +267,7 @@ List price_kemma_vorst_arithmetic_binomial_cpp(
   double sigma = std::log(u / d) / (2.0 * std::sqrt(dt));
 
   // Call the main function
-  return price_kemma_vorst_arithmetic_cpp(
+  return price_kemna_vorst_arithmetic_cpp(
     S0, K, r_continuous, sigma,
     0.0, 1.0,  // T0 = 0, T = 1
     n, M, option_type, use_control_variate, seed

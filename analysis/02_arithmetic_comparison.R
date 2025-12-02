@@ -1,10 +1,10 @@
-#' Arithmetic Average Comparison: CRR Bounds vs Kemma-Vorst Monte Carlo
+#' Arithmetic Average Comparison: CRR Bounds vs Kemna-Vorst Monte Carlo
 #'
 #' This script compares the arithmetic average Asian option pricing between:
 #' 1. CRR Binomial Bounds with Path-Specific Upper Bound (using AM-GM inequality)
-#' 2. Kemma-Vorst Monte Carlo with control variate
+#' 2. Kemna-Vorst Monte Carlo with control variate
 #'
-#' The CRR method provides rigorous lower and upper bounds, while Kemma-Vorst
+#' The CRR method provides rigorous lower and upper bounds, while Kemna-Vorst
 #' provides a point estimate via simulation. We validate that the Monte Carlo
 #' estimate falls within the theoretical bounds.
 #'
@@ -25,7 +25,7 @@ library(dplyr)
 
 cat(strrep("=", 80), "\n")
 cat("ARITHMETIC AVERAGE COMPARISON ANALYSIS\n")
-cat("CRR Path-Specific Bounds vs Kemma-Vorst Monte Carlo\n")
+cat("CRR Path-Specific Bounds vs Kemna-Vorst Monte Carlo\n")
 cat(strrep("=", 80), "\n\n")
 
 # Base parameters
@@ -35,7 +35,7 @@ r_gross <- 1.05  # Gross risk-free rate for TOTAL period
 u <- 1.2       # Up factor
 d <- 0.8       # Down factor
 
-# No price impact (for fair comparison with Kemma-Vorst)
+# No price impact (for fair comparison with Kemna-Vorst)
 lambda <- 0
 v_u <- 0
 v_d <- 0
@@ -95,10 +95,10 @@ crr_bounds_corrected <- function(S0, K, r_gross_total, u, d, n) {
   )
 }
 
-#' Compute Kemma-Vorst Monte Carlo estimate
+#' Compute Kemna-Vorst Monte Carlo estimate
 kv_monte_carlo <- function(S0, K, r_gross_total, u, d, n, M, seed = NULL) {
   # Use binomial parameterization
-  price_kemma_vorst_arithmetic_binomial(
+  price_kemna_vorst_arithmetic_binomial(
     S0 = S0, K = K, r = r_gross_total,
     u = u, d = d, n = n, M = M,
     use_control_variate = TRUE,
@@ -109,7 +109,7 @@ kv_monte_carlo <- function(S0, K, r_gross_total, u, d, n, M, seed = NULL) {
 
 cat("Helper functions defined:\n")
 cat("  - crr_bounds_corrected(): CRR bounds with r^(1/n) rate conversion\n")
-cat("  - kv_monte_carlo(): Kemma-Vorst Monte Carlo with control variate\n\n")
+cat("  - kv_monte_carlo(): Kemna-Vorst Monte Carlo with control variate\n\n")
 
 # ============================================================================
 # SECTION 3: Bounds Validation
@@ -139,7 +139,7 @@ for (n in n_values) {
   # Compute CRR bounds
   bounds <- crr_bounds_corrected(S0, K, r_gross, u, d, n)
 
-  # Compute Kemma-Vorst Monte Carlo
+  # Compute Kemna-Vorst Monte Carlo
   kv_result <- kv_monte_carlo(S0, K, r_gross, u, d, n, M, seed)
 
   # Extract values (using path-specific bound)
@@ -304,7 +304,7 @@ cat(sprintf("Testing at n=%d, K=%d (ATM):\n\n", n_test, K))
 kv_with <- kv_monte_carlo(S0, K, r_gross, u, d, n_test, M, seed)
 
 # Without control variate
-kv_without <- price_kemma_vorst_arithmetic_binomial(
+kv_without <- price_kemna_vorst_arithmetic_binomial(
   S0 = S0, K = K, r = r_gross,
   u = u, d = d, n = n_test, M = M,
   use_control_variate = FALSE,
@@ -495,7 +495,7 @@ cat("   - Both methods complement each other well\n\n")
 
 cat("6. IMPLEMENTATION CORRECTNESS:\n")
 cat("   - CRR bounds correctly implement AM-GM inequality\n")
-cat("   - Kemma-Vorst MC correctly uses geometric control variate\n")
+cat("   - Kemna-Vorst MC correctly uses geometric control variate\n")
 cat("   - All estimates consistent within statistical uncertainty\n")
 cat("   - Rate conversion (r^(1/n)) is crucial for fair comparison\n\n")
 

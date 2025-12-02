@@ -1,4 +1,4 @@
-# Theoretical Connection: Kemma-Vorst vs Price Impact (λ=0)
+# Theoretical Connection: Kemna-Vorst vs Price Impact (λ=0)
 
 **Date:** 2025-11-22
 **Purpose:** Derive the mathematical relationship connecting the two implementations
@@ -7,7 +7,7 @@
 
 ## The Two Models
 
-### 1. Kemma-Vorst (Continuous-Time Analytical)
+### 1. Kemna-Vorst (Continuous-Time Analytical)
 
 **Stock Price Dynamics:**
 $$dS_t = \mu S_t dt + \sigma S_t dW_t$$
@@ -137,7 +137,7 @@ under regularity conditions on the stock price path.
 
 ### 1. **Different Averaging Schemes**
 
-**Kemma-Vorst:**
+**Kemna-Vorst:**
 - Assumes **continuous** averaging: $\frac{1}{T}\int_0^T \log S_t \, dt$
 - This is the limit of infinitely many observations
 
@@ -147,7 +147,7 @@ under regularity conditions on the stock price path.
 
 ### 2. **Discrete vs Continuous Compounding**
 
-**Kemma-Vorst formula** assumes continuously compounded rate $r_{cont}$.
+**Kemna-Vorst formula** assumes continuously compounded rate $r_{cont}$.
 
 **Binomial tree** uses gross rate $r_{gross}$ per period.
 
@@ -177,7 +177,7 @@ $$r_{annual} = \frac{\log(r_{gross})}{\Delta t} = \frac{n \log(r_{gross})}{T}$$
 **For the current implementation with $r_{gross} = 1.05$ and $T=1$:**
 $$r_{annual} = n \log(1.05) = n \times 0.04879...$$
 
-As $n$ increases, this effective annual rate **increases**, which explains why the binomial prices don't match Kemma-Vorst!
+As $n$ increases, this effective annual rate **increases**, which explains why the binomial prices don't match Kemna-Vorst!
 
 ---
 
@@ -196,9 +196,9 @@ $$r_{gross} = e^{0.05/10} = e^{0.005} = 1.005012...$$
 
 The $r_{gross} = 1.05$ implies $r_{annual} \approx n \times 0.04879$, which is huge for large $n$.
 
-### Option B: Kemma-Vorst Uses Per-Period Rate
+### Option B: Kemna-Vorst Uses Per-Period Rate
 
-The `price_kemma_vorst_geometric_binomial` function does:
+The `price_kemna_vorst_geometric_binomial` function does:
 ```r
 r_continuous <- log(r_gross)  # This is per-period rate
 sigma <- log(u/d) / (2 * sqrt(dt))
@@ -238,13 +238,13 @@ $$r_{gross \, per \, step} = e^{r_{annual} \Delta t}$$
 $$p = \frac{r_{gross} - d}{u - d}$$
 
 **Then as $n \to \infty$:**
-$$\text{Binomial Price}_{n \to \infty} \to \text{Kemma-Vorst Price}$$
+$$\text{Binomial Price}_{n \to \infty} \to \text{Kemna-Vorst Price}$$
 
 ---
 
 ## Current Implementation Mismatch
 
-### In `price_kemma_vorst_geometric_binomial`:
+### In `price_kemna_vorst_geometric_binomial`:
 
 ```r
 r_continuous <- log(r)        # Treats r as gross rate for ENTIRE period
@@ -277,12 +277,12 @@ This interprets:
 
 **Interpretation 1: r is gross rate per step**
 - Binomial: Use $r$ directly per step
-- Kemma-Vorst: Use annual rate $r_{annual} = n \log(r)$, time $T = n$ (in step units)
+- Kemna-Vorst: Use annual rate $r_{annual} = n \log(r)$, time $T = n$ (in step units)
 - **Problem:** Annual rate grows with $n$ (unphysical)
 
 **Interpretation 2: r is gross rate for total period** (CORRECT)
 - Binomial: Use $r_{step} = r^{1/n}$ per step
-- Kemma-Vorst: Use annual rate $r_{annual} = \log(r)$, time $T = 1$
+- Kemna-Vorst: Use annual rate $r_{annual} = \log(r)$, time $T = 1$
 - **This matches as $n \to \infty$**
 
 ---
@@ -301,12 +301,12 @@ This interprets:
 - Rate per step: $r_{step} = R^{1/n}$
 - Prob per step: $p_n = \frac{r_{step} - d}{u - d}$
 
-**Kemma-Vorst Model** with:
+**Kemna-Vorst Model** with:
 - Continuous rate: $r_{cont} = \log(R)/T = \log(R)$ (for $T=1$)
 - Volatility: $\sigma$ (same as binomial)
 
 **Then:**
-$$\lim_{n \to \infty} \text{Price}_{\text{binomial}}(n) = \text{Price}_{\text{Kemma-Vorst}}$$
+$$\lim_{n \to \infty} \text{Price}_{\text{binomial}}(n) = \text{Price}_{\text{Kemna-Vorst}}$$
 
 ---
 
@@ -317,7 +317,7 @@ $$\lim_{n \to \infty} \text{Price}_{\text{binomial}}(n) = \text{Price}_{\text{Ke
 **If you want to compare models at fixed $n$:**
 
 The difference is:
-1. **Continuous averaging** (Kemma-Vorst) vs **discrete averaging** (binomial)
+1. **Continuous averaging** (Kemna-Vorst) vs **discrete averaging** (binomial)
 2. The error is $O(1/n)$
 
 **Typical differences for $n=10$:**
@@ -366,11 +366,11 @@ Instead of forcing equivalence, benchmark should emphasize:
 
 2. **Model Comparison:**
    - Acknowledge they're different models
-   - Kemma-Vorst: Fast analytical approximation
+   - Kemna-Vorst: Fast analytical approximation
    - Binomial: Exact for discrete averaging
 
 3. **Convergence Study:**
-   - Show binomial → Kemma-Vorst as n → ∞
+   - Show binomial → Kemna-Vorst as n → ∞
    - Plot error vs n
 
 ---
@@ -383,7 +383,7 @@ $$\boxed{\lim_{n \to \infty} \frac{1}{r_{step}^n} \mathbb{E}^{p_n}\left[\max(G_n
 
 where:
 - Left side: Binomial with $r_{step} = R^{1/n}$, $p_n = \frac{r_{step} - d_n}{u_n - d_n}$
-- Right side: Kemma-Vorst with $r_{cont} = \log(R)$
+- Right side: Kemna-Vorst with $r_{cont} = \log(R)$
 - $u_n = e^{\sigma/\sqrt{n}}$, $d_n = e^{-\sigma/\sqrt{n}}$
 
 **This is the fundamental convergence result.**

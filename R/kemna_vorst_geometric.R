@@ -1,7 +1,7 @@
-#' Kemma-Vorst Geometric Average Asian Call Option (Analytical)
+#' Kemna-Vorst Geometric Average Asian Call Option (Analytical)
 #'
 #' Calculates the price of a geometric average Asian call option using the
-#' closed-form analytical solution from Kemma & Vorst (1990). This is the
+#' closed-form analytical solution from Kemna & Vorst (1990). This is the
 #' standard benchmark implementation WITHOUT price impact.
 #'
 #' @param S0 Numeric. Initial stock price at time T0 (start of averaging period).
@@ -50,7 +50,7 @@
 #' (NOT \code{r = 0.05}). This is standard in the binomial model and consistent
 #' with the rest of the AsianOptPI package.
 #'
-#' However, for the Kemma-Vorst continuous-time model, \code{r} is typically
+#' However, for the Kemna-Vorst continuous-time model, \code{r} is typically
 #' interpreted as the continuously compounded rate. If you have a gross rate
 #' \code{r_gross}, convert it using: \code{r = log(r_gross)}.
 #'
@@ -60,26 +60,26 @@
 #'
 #' @examples
 #' # Basic example: at-the-money call option
-#' price_kemma_vorst_geometric(
+#' price_kemna_vorst_geometric(
 #'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
 #'   T0 = 0, T = 1, option_type = "call"
 #' )
 #'
 #' # Compare call and put prices
-#' call_price <- price_kemma_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "call")
-#' put_price <- price_kemma_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "put")
+#' call_price <- price_kemna_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "call")
+#' put_price <- price_kemna_vorst_geometric(100, 100, 0.05, 0.3, 0, 1, "put")
 #' cat("Call:", call_price, "Put:", put_price, "\n")
 #'
 #' # Out-of-the-money option
-#' price_kemma_vorst_geometric(100, 120, 0.05, 0.2, 0, 1, "call")
+#' price_kemna_vorst_geometric(100, 120, 0.05, 0.2, 0, 1, "call")
 #'
 #' # Different averaging periods
-#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.25, "call")  # 3 months
-#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.5, "call")   # 6 months
-#' price_kemma_vorst_geometric(100, 100, 0.05, 0.2, 0, 1, "call")     # 1 year
+#' price_kemna_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.25, "call")  # 3 months
+#' price_kemna_vorst_geometric(100, 100, 0.05, 0.2, 0, 0.5, "call")   # 6 months
+#' price_kemna_vorst_geometric(100, 100, 0.05, 0.2, 0, 1, "call")     # 1 year
 #'
 #' @export
-price_kemma_vorst_geometric <- function(S0, K, r, sigma, T0, T,
+price_kemna_vorst_geometric <- function(S0, K, r, sigma, T0, T,
                                          option_type = "call") {
   # Input validation
   if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
@@ -140,7 +140,7 @@ price_kemma_vorst_geometric <- function(S0, K, r, sigma, T0, T,
 }
 
 
-#' Kemma-Vorst Geometric Average Asian Option (Alternative Parameterization)
+#' Kemna-Vorst Geometric Average Asian Option (Alternative Parameterization)
 #'
 #' Alternative interface using discrete parameters (n steps, up/down factors)
 #' instead of continuous parameters (sigma, time). This provides compatibility
@@ -158,7 +158,7 @@ price_kemma_vorst_geometric <- function(S0, K, r, sigma, T0, T,
 #'
 #' @details
 #' This function converts binomial parameters (u, d, n) to continuous parameters
-#' (sigma, T) and calls \code{price_kemma_vorst_geometric}.
+#' (sigma, T) and calls \code{price_kemna_vorst_geometric}.
 #'
 #' The conversion formulas are:
 #' \deqn{\sigma = \sqrt{\frac{\log(u/d)^2}{4 \Delta t}}}
@@ -171,13 +171,13 @@ price_kemma_vorst_geometric <- function(S0, K, r, sigma, T0, T,
 #'
 #' @examples
 #' # Using binomial tree parameters
-#' price_kemma_vorst_geometric_binomial(
+#' price_kemna_vorst_geometric_binomial(
 #'   S0 = 100, K = 100, r = 1.05,
 #'   u = 1.2, d = 0.8, n = 10
 #' )
 #'
 #' @export
-price_kemma_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
+price_kemna_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
                                                    option_type = "call") {
   # Input validation
   if (!is.numeric(n) || length(n) != 1 || n < 1 || n != as.integer(n)) {
@@ -205,5 +205,5 @@ price_kemma_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
   T <- 1
 
   # Call the continuous version
-  price_kemma_vorst_geometric(S0, K, r_continuous, sigma, T0, T, option_type)
+  price_kemna_vorst_geometric(S0, K, r_continuous, sigma, T0, T, option_type)
 }

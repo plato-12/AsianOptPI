@@ -223,9 +223,9 @@ price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     .Call(`_AsianOptPI_price_geometric_asian_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n)
 }
 
-#' Kemma-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option
+#' Kemna-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option
 #'
-#' Implements the Kemma-Vorst (1990) Monte Carlo method with variance reduction
+#' Implements the Kemna-Vorst (1990) Monte Carlo method with variance reduction
 #' using the geometric average as a control variate. This is the standard
 #' benchmark implementation WITHOUT price impact.
 #'
@@ -253,7 +253,7 @@ price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' }
 #'
 #' @details
-#' The algorithm follows Kemma & Vorst (1990):
+#' The algorithm follows Kemna & Vorst (1990):
 #'
 #' 1. Generate price paths under risk-neutral dynamics:
 #'    \deqn{\log(S_{i+1}) = \log(S_i) + (r - \sigma^2/2)\Delta t + \sigma\sqrt{\Delta t} Z_i}
@@ -282,7 +282,7 @@ price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' @examples
 #' \donttest{
 #' # Basic example
-#' result <- price_kemma_vorst_arithmetic_cpp(
+#' result <- price_kemna_vorst_arithmetic_cpp(
 #'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
 #'   T0 = 0, T = 1, n = 50, M = 10000,
 #'   option_type = "call"
@@ -292,11 +292,11 @@ price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 #' }
 #'
 #' @export
-price_kemma_vorst_arithmetic_cpp <- function(S0, K, r, sigma, T0, T, n, M, option_type = "call", use_control_variate = TRUE, seed = 0L) {
-    .Call(`_AsianOptPI_price_kemma_vorst_arithmetic_cpp`, S0, K, r, sigma, T0, T, n, M, option_type, use_control_variate, seed)
+price_kemna_vorst_arithmetic_cpp <- function(S0, K, r, sigma, T0, T, n, M, option_type = "call", use_control_variate = TRUE, seed = 0L) {
+    .Call(`_AsianOptPI_price_kemna_vorst_arithmetic_cpp`, S0, K, r, sigma, T0, T, n, M, option_type, use_control_variate, seed)
 }
 
-#' Kemma-Vorst Monte Carlo with Binomial Parameters
+#' Kemna-Vorst Monte Carlo with Binomial Parameters
 #'
 #' Alternative interface using discrete binomial parameters instead of
 #' continuous parameters.
@@ -312,10 +312,10 @@ price_kemma_vorst_arithmetic_cpp <- function(S0, K, r, sigma, T0, T, n, M, optio
 #' @param use_control_variate Boolean: use variance reduction
 #' @param seed Integer: random seed
 #'
-#' @return List with pricing results (same as price_kemma_vorst_arithmetic_cpp)
+#' @return List with pricing results (same as price_kemna_vorst_arithmetic_cpp)
 #'
 #' @export
-price_kemma_vorst_arithmetic_binomial_cpp <- function(S0, K, r, u, d, n, M, option_type = "call", use_control_variate = TRUE, seed = 0L) {
-    .Call(`_AsianOptPI_price_kemma_vorst_arithmetic_binomial_cpp`, S0, K, r, u, d, n, M, option_type, use_control_variate, seed)
+price_kemna_vorst_arithmetic_binomial_cpp <- function(S0, K, r, u, d, n, M, option_type = "call", use_control_variate = TRUE, seed = 0L) {
+    .Call(`_AsianOptPI_price_kemna_vorst_arithmetic_binomial_cpp`, S0, K, r, u, d, n, M, option_type, use_control_variate, seed)
 }
 

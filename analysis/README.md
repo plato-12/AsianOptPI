@@ -1,7 +1,7 @@
 # AsianOptPI Comparative Analysis
 
 **Date:** 2025-11-23
-**Purpose:** Comprehensive validation and comparison of CRR binomial vs Kemma-Vorst analytical/Monte Carlo methods for Asian option pricing
+**Purpose:** Comprehensive validation and comparison of CRR binomial vs Kemna-Vorst analytical/Monte Carlo methods for Asian option pricing
 
 ---
 
@@ -15,7 +15,7 @@ This directory contains detailed comparative analyses between two implementation
    - AM-GM inequality bounds for arithmetic average
    - Supports price impact (λ > 0)
 
-2. **Kemma-Vorst Methods** (Continuous-time analytical)
+2. **Kemna-Vorst Methods** (Continuous-time analytical)
    - Closed-form analytical formula for geometric average
    - Monte Carlo with control variate for arithmetic average
    - No price impact support (λ = 0 only)
@@ -28,7 +28,7 @@ This directory contains detailed comparative analyses between two implementation
 AsianOptPI/analysis/
 ├── README.md                      # This file
 ├── run_all_analyses.R             # Master script to run all analyses
-├── 01_geometric_comparison.R      # Geometric average: CRR vs Kemma-Vorst
+├── 01_geometric_comparison.R      # Geometric average: CRR vs Kemna-Vorst
 ├── 02_arithmetic_comparison.R     # Arithmetic average: Bounds vs Monte Carlo
 └── figures/                       # Generated plots (PNG)
     ├── geometric_convergence.png
@@ -91,12 +91,12 @@ source("AsianOptPI/analysis/02_arithmetic_comparison.R")
 
 ### Purpose
 
-Validates the theoretical connection between CRR binomial (with λ=0) and Kemma-Vorst analytical formula for **geometric average** Asian options.
+Validates the theoretical connection between CRR binomial (with λ=0) and Kemna-Vorst analytical formula for **geometric average** Asian options.
 
 ### Key Questions Addressed
 
 1. **Do the implementations converge?**
-   - Yes, CRR → Kemma-Vorst as n → ∞
+   - Yes, CRR → Kemna-Vorst as n → ∞
    - Convergence rate: O(1/n) as predicted by theory
 
 2. **Why don't they match exactly at finite n?**
@@ -123,7 +123,7 @@ Validates the theoretical connection between CRR binomial (with λ=0) and Kemma-
 ### Output Plots
 
 1. **`geometric_convergence.png`**
-   - Shows CRR price converging to Kemma-Vorst as n increases
+   - Shows CRR price converging to Kemna-Vorst as n increases
    - Compares original vs corrected rate conversion
 
 2. **`geometric_error_convergence.png`**
@@ -150,7 +150,7 @@ Validates the theoretical connection between CRR binomial (with λ=0) and Kemma-
 
 ### Purpose
 
-Compares CRR **arithmetic bounds** (using AM-GM inequality) with Kemma-Vorst **Monte Carlo estimates** (with control variate).
+Compares CRR **arithmetic bounds** (using AM-GM inequality) with Kemna-Vorst **Monte Carlo estimates** (with control variate).
 
 ### Key Questions Addressed
 
@@ -225,7 +225,7 @@ Compares CRR **arithmetic bounds** (using AM-GM inequality) with Kemma-Vorst **M
 - Over n steps: total return = r^n
 - Risk-neutral probability: p = (r - d) / (u - d)
 
-**Kemma-Vorst:**
+**Kemna-Vorst:**
 - Treats `r` as **gross rate for entire period**
 - Converts to continuous: r_cont = log(r)
 - Uses continuous-time Black-Scholes-like formulas
@@ -233,7 +233,7 @@ Compares CRR **arithmetic bounds** (using AM-GM inequality) with Kemma-Vorst **M
 **Solution:**
 For proper comparison with total period rate R:
 - **CRR**: Use `r_per_step = R^(1/n)`
-- **Kemma-Vorst**: Use `r_cont = log(R)`
+- **Kemna-Vorst**: Use `r_cont = log(R)`
 
 See `THEORETICAL_CONNECTION.md` for complete mathematical derivation.
 
@@ -242,7 +242,7 @@ See `THEORETICAL_CONNECTION.md` for complete mathematical derivation.
 **Discrete (CRR):**
 $$G_n = \left(\prod_{i=0}^{n} S_i\right)^{1/(n+1)}$$
 
-**Continuous (Kemma-Vorst):**
+**Continuous (Kemna-Vorst):**
 $$G_T = \exp\left[\frac{1}{T} \int_0^T \log S_t \, dt\right]$$
 
 **Convergence:**
@@ -275,26 +275,26 @@ Derived from reverse AM-GM inequality (Budimir et al., 2000).
 | Method | Best For | Pros | Cons |
 |--------|----------|------|------|
 | **CRR Geometric (λ=0)** | Discrete averaging validation | Exact for discrete | Slow (O(2^n)) |
-| **Kemma-Vorst Geometric** | Fast pricing | Closed-form, instant | Continuous only |
+| **Kemna-Vorst Geometric** | Fast pricing | Closed-form, instant | Continuous only |
 | **CRR Arithmetic Bounds** | Risk management, guarantees | Rigorous bounds | Wide spread |
-| **Kemma-Vorst Arithmetic MC** | Point estimates | Accurate, fast | Statistical error |
+| **Kemna-Vorst Arithmetic MC** | Point estimates | Accurate, fast | Statistical error |
 | **CRR with λ>0** | Price impact analysis | Unique feature | No benchmark |
 
 ### Practical Recommendations
 
 **For Production Pricing:**
-1. **Geometric Asian:** Use Kemma-Vorst analytical (instant, exact)
-2. **Arithmetic Asian:** Use Kemma-Vorst MC with M=50,000-100,000
+1. **Geometric Asian:** Use Kemna-Vorst analytical (instant, exact)
+2. **Arithmetic Asian:** Use Kemna-Vorst MC with M=50,000-100,000
 3. **With Price Impact:** Use CRR (only option available)
 
 **For Validation:**
-1. **Geometric:** Compare CRR (λ=0) with Kemma-Vorst at n=20-30
+1. **Geometric:** Compare CRR (λ=0) with Kemna-Vorst at n=20-30
 2. **Arithmetic:** Verify MC estimate falls within CRR bounds
 3. **Convergence:** Test multiple n values to confirm O(1/n) error
 
 **For Research:**
 1. **Theoretical Studies:** Use CRR bounds for rigorous analysis
-2. **Sensitivity Analysis:** Use Kemma-Vorst MC for speed
+2. **Sensitivity Analysis:** Use Kemna-Vorst MC for speed
 3. **Price Impact Effects:** Compare λ=0 vs λ>0 within CRR
 
 ---
@@ -338,7 +338,7 @@ From u=1.2, d=0.8, n=20:
 - Practical limit: n ≤ 20-25
 - Memory: O(n · 2^n)
 
-**Kemma-Vorst Methods:**
+**Kemna-Vorst Methods:**
 - Geometric: O(1) (closed-form)
 - Arithmetic: O(M · n) for M simulations
 - Monte Carlo is faster for large n
@@ -349,7 +349,7 @@ From u=1.2, d=0.8, n=20:
 - Exact within floating-point precision
 - No discretization error (discrete model)
 
-**Kemma-Vorst:**
+**Kemna-Vorst:**
 - Geometric: Exact (analytical formula)
 - Arithmetic: Statistical error ~ 1/√M
 - With M=50,000, SE ≈ 0.001-0.01

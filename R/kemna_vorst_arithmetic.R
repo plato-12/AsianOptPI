@@ -1,8 +1,8 @@
-#' Kemma-Vorst Arithmetic Average Asian Option (Monte Carlo)
+#' Kemna-Vorst Arithmetic Average Asian Option (Monte Carlo)
 #'
 #' Calculates the price of an arithmetic average Asian option using Monte Carlo
 #' simulation with variance reduction via the geometric average control variate.
-#' This implements the Kemma & Vorst (1990) method WITHOUT price impact.
+#' This implements the Kemna & Vorst (1990) method WITHOUT price impact.
 #'
 #' @param S0 Numeric. Initial stock price at time T0 (start of averaging period).
 #'   Must be positive.
@@ -49,7 +49,7 @@
 #' \deqn{\max(A_T - K, 0)}
 #'
 #' Unlike the geometric average, there is no closed-form solution for the
-#' arithmetic average Asian option. The Kemma-Vorst method uses Monte Carlo
+#' arithmetic average Asian option. The Kemna-Vorst method uses Monte Carlo
 #' simulation with a powerful variance reduction technique:
 #'
 #' \strong{Control Variate Method:}
@@ -95,13 +95,13 @@
 #'
 #' @examples
 #' # Basic example: at-the-money call option
-#' price_kemma_vorst_arithmetic(
+#' price_kemna_vorst_arithmetic(
 #'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
 #'   T0 = 0, T = 1, n = 50, M = 10000
 #' )
 #'
 #' # With diagnostic information
-#' result <- price_kemma_vorst_arithmetic(
+#' result <- price_kemna_vorst_arithmetic(
 #'   S0 = 100, K = 100, r = 0.05, sigma = 0.2,
 #'   T0 = 0, T = 1, n = 50, M = 10000,
 #'   return_diagnostics = TRUE, seed = 123
@@ -113,11 +113,11 @@
 #'
 #' # Compare with and without variance reduction
 #' \donttest{
-#' with_control <- price_kemma_vorst_arithmetic(
+#' with_control <- price_kemna_vorst_arithmetic(
 #'   100, 100, 0.05, 0.2, 0, 1, 50, 10000,
 #'   use_control_variate = TRUE, return_diagnostics = TRUE, seed = 123
 #' )
-#' without_control <- price_kemma_vorst_arithmetic(
+#' without_control <- price_kemna_vorst_arithmetic(
 #'   100, 100, 0.05, 0.2, 0, 1, 50, 10000,
 #'   use_control_variate = FALSE, return_diagnostics = TRUE, seed = 123
 #' )
@@ -127,14 +127,14 @@
 #' }
 #'
 #' # Out-of-the-money option
-#' price_kemma_vorst_arithmetic(100, 120, 0.05, 0.2, 0, 1, 50, 10000)
+#' price_kemna_vorst_arithmetic(100, 120, 0.05, 0.2, 0, 1, 50, 10000)
 #'
 #' # Put option
-#' price_kemma_vorst_arithmetic(100, 100, 0.05, 0.2, 0, 1, 50, 10000,
+#' price_kemna_vorst_arithmetic(100, 100, 0.05, 0.2, 0, 1, 50, 10000,
 #'                               option_type = "put")
 #'
 #' @export
-price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
+price_kemna_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
                                           option_type = "call",
                                           use_control_variate = TRUE,
                                           seed = NULL,
@@ -182,7 +182,7 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
   }
 
   # Call C++ implementation
-  result <- price_kemma_vorst_arithmetic_cpp(
+  result <- price_kemna_vorst_arithmetic_cpp(
     S0 = S0, K = K, r = r, sigma = sigma,
     T0 = T0, T = T, n = as.integer(n), M = as.integer(M),
     option_type = option_type,
@@ -191,7 +191,7 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
   )
 
   # Add class for pretty printing
-  class(result) <- c("kemma_vorst_arithmetic", "list")
+  class(result) <- c("kemna_vorst_arithmetic", "list")
 
   # Return result
   if (return_diagnostics) {
@@ -202,7 +202,7 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
 }
 
 
-#' Kemma-Vorst Arithmetic Average Asian Option (Binomial Parameters)
+#' Kemna-Vorst Arithmetic Average Asian Option (Binomial Parameters)
 #'
 #' Alternative interface using discrete binomial tree parameters instead of
 #' continuous parameters. This provides compatibility with the binomial
@@ -220,11 +220,11 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
 #' @param seed Integer. Random seed for reproducibility. Default is NULL.
 #' @param return_diagnostics Logical. Return detailed diagnostics (default FALSE).
 #'
-#' @return Same as \code{price_kemma_vorst_arithmetic}.
+#' @return Same as \code{price_kemna_vorst_arithmetic}.
 #'
 #' @details
 #' This function converts binomial parameters to continuous parameters and
-#' calls \code{price_kemma_vorst_arithmetic}.
+#' calls \code{price_kemna_vorst_arithmetic}.
 #'
 #' Conversion formulas:
 #' \itemize{
@@ -235,13 +235,13 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
 #'
 #' @examples
 #' # Using binomial tree parameters
-#' price_kemma_vorst_arithmetic_binomial(
+#' price_kemna_vorst_arithmetic_binomial(
 #'   S0 = 100, K = 100, r = 1.05,
 #'   u = 1.2, d = 0.8, n = 10, M = 10000
 #' )
 #'
 #' # With diagnostics
-#' result <- price_kemma_vorst_arithmetic_binomial(
+#' result <- price_kemna_vorst_arithmetic_binomial(
 #'   S0 = 100, K = 100, r = 1.05,
 #'   u = 1.2, d = 0.8, n = 10, M = 10000,
 #'   return_diagnostics = TRUE, seed = 123
@@ -249,7 +249,7 @@ price_kemma_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
 #' print(result)
 #'
 #' @export
-price_kemma_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
+price_kemna_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
                                                     option_type = "call",
                                                     use_control_variate = TRUE,
                                                     seed = NULL,
@@ -276,7 +276,7 @@ price_kemma_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
   T <- 1
 
   # Call the main function
-  price_kemma_vorst_arithmetic(
+  price_kemna_vorst_arithmetic(
     S0 = S0, K = K, r = r_continuous, sigma = sigma,
     T0 = T0, T = T, n = n, M = M,
     option_type = option_type,
@@ -287,14 +287,14 @@ price_kemma_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
 }
 
 
-#' Print Method for Kemma-Vorst Arithmetic Results
+#' Print Method for Kemna-Vorst Arithmetic Results
 #'
-#' @param x Object of class "kemma_vorst_arithmetic"
+#' @param x Object of class "kemna_vorst_arithmetic"
 #' @param ... Additional arguments (ignored)
 #'
 #' @export
-print.kemma_vorst_arithmetic <- function(x, ...) {
-  cat("Kemma-Vorst Arithmetic Asian Option (Monte Carlo)\n")
+print.kemna_vorst_arithmetic <- function(x, ...) {
+  cat("Kemna-Vorst Arithmetic Asian Option (Monte Carlo)\n")
   cat("==================================================\n\n")
 
   cat(sprintf("Estimated Price:     %.6f\n", x$price))
@@ -316,13 +316,13 @@ print.kemma_vorst_arithmetic <- function(x, ...) {
 }
 
 
-#' Summary Method for Kemma-Vorst Arithmetic Results
+#' Summary Method for Kemna-Vorst Arithmetic Results
 #'
-#' @param object Object of class "kemma_vorst_arithmetic"
+#' @param object Object of class "kemna_vorst_arithmetic"
 #' @param ... Additional arguments (ignored)
 #'
 #' @export
-summary.kemma_vorst_arithmetic <- function(object, ...) {
+summary.kemna_vorst_arithmetic <- function(object, ...) {
   print(object)
   invisible(object)
 }

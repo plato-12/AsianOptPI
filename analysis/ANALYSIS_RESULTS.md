@@ -15,7 +15,7 @@ This document presents comprehensive validation and analysis results for the Asi
 
 All four analysis objectives completed successfully:
 1. ✅ European Option validation (CRR vs Black-Scholes)
-2. ✅ Geometric Asian validation (CRR vs Kemma-Vorst)
+2. ✅ Geometric Asian validation (CRR vs Kemna-Vorst)
 3. ✅ **Arithmetic Asian validation with Path-Specific Bounds (99.4% tighter!)**
 4. ✅ Price Impact analysis (core research contribution)
 
@@ -66,10 +66,10 @@ Validate the foundational CRR binomial implementation against the established Bl
 
 ---
 
-## Analysis 2: Geometric Asian Comparison (CRR vs Kemma-Vorst)
+## Analysis 2: Geometric Asian Comparison (CRR vs Kemna-Vorst)
 
 ### Objective
-Validate CRR geometric average pricing (λ=0) against Kemma-Vorst analytical formula.
+Validate CRR geometric average pricing (λ=0) against Kemna-Vorst analytical formula.
 
 ### Critical Finding: Rate Interpretation Matters!
 
@@ -86,7 +86,7 @@ Validate CRR geometric average pricing (λ=0) against Kemma-Vorst analytical for
 
 ### Results
 
-| n  | CRR (Corrected) | Kemma-Vorst | Error  |
+| n  | CRR (Corrected) | Kemna-Vorst | Error  |
 |----|-----------------|-------------|--------|
 | 5  | 9.991           | 10.819      | 7.65%  |
 | 10 | 13.132          | 14.125      | 7.03%  |
@@ -99,7 +99,7 @@ Validate CRR geometric average pricing (λ=0) against Kemma-Vorst analytical for
 
 **Volatility Reduction:**
 - Binomial σ (from u/d): 0.9066
-- Geometric σ (Kemma-Vorst): 0.5235
+- Geometric σ (Kemna-Vorst): 0.5235
 - Ratio: 0.5774 = 1/√3 **✓ EXACT MATCH**
 
 **Convergence Properties:**
@@ -110,7 +110,7 @@ Validate CRR geometric average pricing (λ=0) against Kemma-Vorst analytical for
 ### Conclusions
 
 ✅ **CRR geometric Asian pricing is correct**
-- Converges to Kemma-Vorst analytical formula
+- Converges to Kemna-Vorst analytical formula
 - Volatility reduction matches theory exactly (1/√3)
 - Rate conversion (r^(1/n)) is critical for fair comparison
 
@@ -125,7 +125,7 @@ Validate CRR geometric average pricing (λ=0) against Kemma-Vorst analytical for
 ## Analysis 3: Arithmetic Asian Comparison (CRR Path-Specific Bounds vs Monte Carlo)
 
 ### Objective
-Validate CRR arithmetic bounds (AM-GM inequality) against Kemma-Vorst Monte Carlo estimates using **path-specific upper bounds** for dramatically improved accuracy.
+Validate CRR arithmetic bounds (AM-GM inequality) against Kemna-Vorst Monte Carlo estimates using **path-specific upper bounds** for dramatically improved accuracy.
 
 ### Parameters
 - Same base parameters
@@ -325,7 +325,7 @@ Analyze the effect of hedging-induced price movements (λ > 0) on Asian option p
 
 **All validation tests passed:**
 - ✅ European options: CRR converges to Black-Scholes (error < 0.01% at n=1000)
-- ✅ Geometric Asian: CRR converges to Kemma-Vorst (6-7% error, decreasing with n)
+- ✅ Geometric Asian: CRR converges to Kemna-Vorst (6-7% error, decreasing with n)
 - ✅ Arithmetic Asian: Bounds are valid, MC estimates accurate
 - ✅ Price impact: All constraints satisfied, model stable
 
@@ -358,9 +358,9 @@ Analyze the effect of hedging-induced price movements (λ > 0) on Asian option p
 ### 4. Methodological Recommendations
 
 **For Geometric Asian Options:**
-- Small n (n≤10): Use Kemma-Vorst (fast, accurate)
+- Small n (n≤10): Use Kemna-Vorst (fast, accurate)
 - With price impact: Use CRR (only option available)
-- Validation: Compare λ=0 case with Kemma-Vorst
+- Validation: Compare λ=0 case with Kemna-Vorst
 
 **For Arithmetic Asian Options:**
 - Production pricing: Monte Carlo with control variate
@@ -420,7 +420,7 @@ Analyze the effect of hedging-induced price movements (λ > 0) on Asian option p
 - n=20: High accuracy (1M paths, ~10 seconds)
 
 **For production:**
-- Geometric with λ=0: Use Kemma-Vorst (instant)
+- Geometric with λ=0: Use Kemna-Vorst (instant)
 - Geometric with λ>0: Use CRR with n=15-20
 - Arithmetic: Use Monte Carlo (M=50,000+)
 

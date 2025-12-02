@@ -1,11 +1,11 @@
 #' Master Analysis Script for AsianOptPI
 #'
 #' This script runs all comparative analyses between CRR binomial and
-#' Kemma-Vorst analytical/Monte Carlo methods for Asian options.
+#' Kemna-Vorst analytical/Monte Carlo methods for Asian options.
 #'
 #' Analyses included:
-#' 1. Geometric Average: CRR (λ=0) vs Kemma-Vorst Analytical
-#' 2. Arithmetic Average: CRR Bounds vs Kemma-Vorst Monte Carlo
+#' 1. Geometric Average: CRR (λ=0) vs Kemna-Vorst Analytical
+#' 2. Arithmetic Average: CRR Bounds vs Kemna-Vorst Monte Carlo
 #'
 #' Date: 2025-11-23
 #' Author: Priyanshu Tiwari
@@ -17,7 +17,7 @@
 cat("\n")
 cat(strrep("=", 80), "\n")
 cat("ASIANOPTIONS PACKAGE - COMPREHENSIVE ANALYSIS\n")
-cat("Validation of CRR Binomial vs Kemma-Vorst Methods\n")
+cat("Validation of CRR Binomial vs Kemna-Vorst Methods\n")
 cat(strrep("=", 80), "\n\n")
 
 # Check if package is loaded
@@ -55,7 +55,7 @@ start_time <- Sys.time()
 
 cat(strrep("=", 80), "\n")
 cat("ANALYSIS 1: GEOMETRIC AVERAGE COMPARISON\n")
-cat("CRR Binomial (λ=0) vs Kemma-Vorst Analytical\n")
+cat("CRR Binomial (λ=0) vs Kemna-Vorst Analytical\n")
 cat(strrep("=", 80), "\n\n")
 
 cat("Running: 01_geometric_comparison.R\n")
@@ -78,7 +78,7 @@ tryCatch({
 
 cat(strrep("=", 80), "\n")
 cat("ANALYSIS 2: ARITHMETIC AVERAGE COMPARISON\n")
-cat("CRR Bounds vs Kemma-Vorst Monte Carlo\n")
+cat("CRR Bounds vs Kemna-Vorst Monte Carlo\n")
 cat(strrep("=", 80), "\n\n")
 
 cat("Running: 02_arithmetic_comparison.R\n")
@@ -134,7 +134,7 @@ cat("QUICK REFERENCE: KEY FINDINGS\n")
 cat(strrep("=", 80), "\n\n")
 
 cat("1. GEOMETRIC AVERAGE:\n")
-cat("   - CRR (λ=0) converges to Kemma-Vorst as n → ∞\n")
+cat("   - CRR (λ=0) converges to Kemna-Vorst as n → ∞\n")
 cat("   - Rate conversion crucial: use r^(1/n) per step, not r\n")
 cat("   - Convergence rate: O(1/n) as theory predicts\n")
 cat("   - Difference < 1% for n ≥ 20 with corrected rate\n\n")
@@ -146,16 +146,16 @@ cat("   - Control variate reduces MC std error by ~10-20x\n")
 cat("   - Midpoint provides good approximation\n\n")
 
 cat("3. IMPLEMENTATION QUALITY:\n")
-cat("   - Both CRR and Kemma-Vorst implementations are correct\n")
+cat("   - Both CRR and Kemna-Vorst implementations are correct\n")
 cat("   - Differences arise from discrete vs continuous averaging\n")
 cat("   - Methods complement each other (bounds + estimates)\n")
 cat("   - Package ready for production use\n\n")
 
 cat("4. RECOMMENDED USAGE:\n")
-cat("   - Geometric: Use Kemma-Vorst analytical (fast + exact for continuous)\n")
+cat("   - Geometric: Use Kemna-Vorst analytical (fast + exact for continuous)\n")
 cat("   - Geometric: Use CRR (λ=0) for discrete averaging validation\n")
 cat("   - Arithmetic: Use CRR bounds for rigorous pricing ranges\n")
-cat("   - Arithmetic: Use Kemma-Vorst MC for point estimates\n")
+cat("   - Arithmetic: Use Kemna-Vorst MC for point estimates\n")
 cat("   - Price impact: Only CRR supports λ > 0 (unique feature)\n\n")
 
 cat(strrep("=", 80), "\n")

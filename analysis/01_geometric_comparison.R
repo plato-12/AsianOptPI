@@ -1,7 +1,7 @@
-#' Geometric Average Comparison: CRR Binomial vs Kemma-Vorst Analytical
+#' Geometric Average Comparison: CRR Binomial vs Kemna-Vorst Analytical
 #'
 #' This script validates the theoretical connection between the CRR binomial
-#' implementation (with λ=0) and the Kemma-Vorst analytical formula for
+#' implementation (with λ=0) and the Kemna-Vorst analytical formula for
 #' geometric average Asian options.
 
 
@@ -16,7 +16,7 @@ library(dplyr)
 
 cat(strrep("=", 80), "\n")
 cat("GEOMETRIC AVERAGE COMPARISON ANALYSIS\n")
-cat("CRR Binomial (λ=0) vs Kemma-Vorst Analytical\n")
+cat("CRR Binomial (λ=0) vs Kemna-Vorst Analytical\n")
 cat(strrep("=", 80), "\n\n")
 
 # Base parameters (following package conventions)
@@ -79,14 +79,14 @@ cat("   - Uses 'r' as gross rate PER STEP\n")
 cat("   - Over n steps: total return = r^n\n")
 cat("   - Risk-neutral probability: p = (r - d) / (u - d)\n\n")
 
-cat("2. Kemma-Vorst Implementation:\n")
+cat("2. Kemna-Vorst Implementation:\n")
 cat("   - Treats 'r' as gross rate for ENTIRE period\n")
 cat("   - Converts to continuous: r_cont = log(r)\n")
 cat("   - Uses continuous-time formulas\n\n")
 
 cat("For proper comparison, we need to:\n")
 cat("  Option A: Use r_step = r_gross^(1/n) in CRR\n")
-cat("  Option B: Use r_cont = log(r_gross) in Kemma-Vorst (current)\n\n")
+cat("  Option B: Use r_cont = log(r_gross) in Kemna-Vorst (current)\n\n")
 
 # ============================================================================
 # SECTION 3: Implementation Comparison Functions
@@ -117,10 +117,10 @@ price_crr_original <- function(S0, K, r_gross, u, d, n) {
   )
 }
 
-#' Compute Kemma-Vorst analytical price
+#' Compute Kemna-Vorst analytical price
 price_kv <- function(S0, K, r_gross_total, u, d, n) {
   # Uses binomial parameterization wrapper
-  price_kemma_vorst_geometric_binomial(
+  price_kemna_vorst_geometric_binomial(
     S0 = S0, K = K, r = r_gross_total,
     u = u, d = d, n = n
   )
@@ -168,7 +168,7 @@ for (n in n_values) {
     n = n,
     CRR_Original = price_crr_orig,
     CRR_Corrected = price_crr_corr,
-    Kemma_Vorst = price_kv_val,
+    Kemna_Vorst = price_kv_val,
     Diff_Orig = diff_orig_kv,
     Diff_Corr = diff_corr_kv,
     Pct_Orig = pct_orig,
@@ -217,7 +217,7 @@ for (moneyness in moneyness_levels) {
     Moneyness = moneyness,
     K = K_test,
     CRR_Corrected = price_crr_corr,
-    Kemma_Vorst = price_kv_val,
+    Kemna_Vorst = price_kv_val,
     Abs_Diff = diff,
     Pct_Error = pct_error
   ))
@@ -245,7 +245,7 @@ sigma_geometric <- sigma_binomial / sqrt(3)
 
 cat("1. Volatility Reduction:\n")
 cat(sprintf("   - Binomial σ (implied from u/d): %.4f\n", sigma_binomial))
-cat(sprintf("   - Geometric σ (Kemma-Vorst):      %.4f\n", sigma_geometric))
+cat(sprintf("   - Geometric σ (Kemna-Vorst):      %.4f\n", sigma_geometric))
 cat(sprintf("   - Ratio σ_G / σ:                  %.4f (expected: %.4f)\n\n",
             sigma_geometric / sigma_binomial, 1/sqrt(3)))
 
@@ -280,16 +280,16 @@ cat(sprintf("   - Observed error at n=%d: %.2f%%\n\n", n_fixed,
 cat("SECTION 7: Generating Visualizations\n")
 cat(strrep("-", 80), "\n\n")
 
-# Plot 1: Convergence of CRR to Kemma-Vorst
+# Plot 1: Convergence of CRR to Kemna-Vorst
 p1 <- ggplot(convergence_results, aes(x = n)) +
   geom_line(aes(y = CRR_Original, color = "CRR Original (r per step)"),
             linewidth = 1) +
   geom_line(aes(y = CRR_Corrected, color = "CRR Corrected (r^(1/n) per step)"),
             linewidth = 1) +
-  geom_hline(aes(yintercept = Kemma_Vorst[1], color = "Kemma-Vorst (analytical)"),
+  geom_hline(aes(yintercept = Kemna_Vorst[1], color = "Kemna-Vorst (analytical)"),
              linetype = "dashed", linewidth = 1) +
   labs(
-    title = "Convergence: CRR Binomial → Kemma-Vorst Analytical",
+    title = "Convergence: CRR Binomial → Kemna-Vorst Analytical",
     subtitle = sprintf("S0=%d, K=%d, r=%.2f, u=%.1f, d=%.1f, λ=0",
                        S0, K, r_gross, u, d),
     x = "Number of time steps (n)",
@@ -319,7 +319,7 @@ p2 <- ggplot(convergence_long, aes(x = n, y = Pct_Error, color = Method)) +
   geom_point(size = 2) +
   scale_y_log10() +
   labs(
-    title = "Convergence Error: CRR vs Kemma-Vorst",
+    title = "Convergence Error: CRR vs Kemna-Vorst",
     subtitle = "Percentage difference (log scale)",
     x = "Number of time steps (n)",
     y = "Percentage Error (%)",
@@ -335,13 +335,13 @@ cat("Saved: figures/geometric_error_convergence.png\n")
 
 # Plot 3: Moneyness comparison
 moneyness_long <- moneyness_results %>%
-  select(Moneyness, CRR_Corrected, Kemma_Vorst) %>%
-  pivot_longer(cols = c(CRR_Corrected, Kemma_Vorst),
+  select(Moneyness, CRR_Corrected, Kemna_Vorst) %>%
+  pivot_longer(cols = c(CRR_Corrected, Kemna_Vorst),
                names_to = "Method",
                values_to = "Price") %>%
   mutate(Method = ifelse(Method == "CRR_Corrected",
                          "CRR Binomial (corrected)",
-                         "Kemma-Vorst (analytical)"))
+                         "Kemna-Vorst (analytical)"))
 
 p3 <- ggplot(moneyness_long, aes(x = Moneyness, y = Price, color = Method)) +
   geom_line(linewidth = 1) +
@@ -373,7 +373,7 @@ cat("Key Findings:\n\n")
 
 cat("1. RATE INTERPRETATION MATTERS:\n")
 cat("   - Original implementation (r per step) gives large systematic errors\n")
-cat("   - Corrected implementation (r^(1/n) per step) converges to Kemma-Vorst\n")
+cat("   - Corrected implementation (r^(1/n) per step) converges to Kemna-Vorst\n")
 cat("   - Recommendation: Use corrected rate conversion for fair comparison\n\n")
 
 cat("2. CONVERGENCE VERIFIED:\n")
@@ -390,7 +390,7 @@ cat("   - Both methods are valid; choice depends on contract specification\n\n")
 
 cat("4. IMPLEMENTATION CORRECTNESS:\n")
 cat("   - CRR binomial (λ=0) correctly implements discrete geometric average\n")
-cat("   - Kemma-Vorst correctly implements continuous geometric average\n")
+cat("   - Kemna-Vorst correctly implements continuous geometric average\n")
 cat("   - With proper rate conversion, they converge as expected\n\n")
 
 cat("5. RECOMMENDATION FOR PACKAGE:\n")
