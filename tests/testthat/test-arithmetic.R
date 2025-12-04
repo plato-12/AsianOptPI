@@ -333,3 +333,330 @@ test_that("Call and put bounds use same rho_star and EQ_G", {
   # But bounds should differ
   expect_false(isTRUE(all.equal(bounds_call$lower_bound, bounds_put$lower_bound)))
 })
+
+# ============================================================================
+# PATH-SPECIFIC UPPER BOUND TESTS
+# ============================================================================
+
+test_that("Path-specific bound is computed when requested", {
+  bounds_ps <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                                        compute_path_specific = TRUE)
+
+  expect_true(!is.na(bounds_ps$upper_bound_path_specific))
+  expect_true(is.numeric(bounds_ps$upper_bound_path_specific))
+  expect_true(bounds_ps$n_paths_sampled > 0)
+})
+
+test_that("Path-specific bound is NA when not requested", {
+  bounds_no_ps <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                                           compute_path_specific = FALSE)
+
+  expect_true(is.na(bounds_no_ps$upper_bound_path_specific))
+  expect_equal(bounds_no_ps$n_paths_sampled, 0)
+})
+
+test_that("Path-specific bound satisfies ordering: lower <= path-specific <= global", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = 1.0)
+
+  # Lower bound <= path-specific bound
+  expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific)
+
+  # Path-specific bound <= global bound (path-specific should be tighter)
+  expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global)
+})
+
+test_that("Path-specific bound is tighter than global bound", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.3, 0.7, 0.1, 1, 1, 5,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = 1.0)
+
+  # Path-specific spread should be smaller than global spread
+  spread_ps <- bounds$upper_bound_path_specific - bounds$lower_bound
+  spread_global <- bounds$upper_bound_global - bounds$lower_bound
+
+  expect_true(spread_ps <= spread_global)
+})
+
+test_that("Path-specific bound with small n uses exact enumeration", {
+  n <- 5  # 2^5 = 32 paths
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = 1.0)  # Enumerate all
+
+  # Should enumerate all 2^n paths when sample_fraction = 1.0
+  expect_equal(bounds$n_paths_sampled, 2^n)
+})
+
+test_that("Path-specific bound with large n uses sampling", {
+  n <- 10  # 2^10 = 1024 paths
+  max_sample <- 500
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
+                                     compute_path_specific = TRUE,
+                                     max_sample_size = max_sample,
+                                     sample_fraction = 1.0)  # Request all but cap at max
+
+  # Should be capped at max_sample_size
+  expect_equal(bounds$n_paths_sampled, max_sample)
+})
+
+test_that("Path-specific bound respects sample_fraction", {
+  n <- 8  # 2^8 = 256 paths
+  sample_frac <- 0.5
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = sample_frac,
+                                     max_sample_size = 1000000)  # Large enough not to limit
+
+  # Should sample approximately sample_fraction * 2^n paths
+  expected_samples <- floor(sample_frac * 2^n)
+  expect_equal(bounds$n_paths_sampled, expected_samples)
+})
+
+test_that("Path-specific bound works for n=1 case", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 1,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = 1.0)
+
+  expect_true(!is.na(bounds$upper_bound_path_specific))
+  expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific)
+  expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global)
+  expect_equal(bounds$n_paths_sampled, 2)  # 2^1 = 2 paths
+})
+
+test_that("Path-specific bound validation: max_sample_size", {
+  # Invalid max_sample_size
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = TRUE,
+                            max_sample_size = 0),
+    "max_sample_size must be at least 1"
+  )
+
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = TRUE,
+                            max_sample_size = -10),
+    "max_sample_size must be at least 1"
+  )
+})
+
+test_that("Path-specific bound validation: sample_fraction", {
+  # Invalid sample_fraction
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = TRUE,
+                            sample_fraction = 0),
+    "sample_fraction must be between 0 and 1"
+  )
+
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = TRUE,
+                            sample_fraction = -0.1),
+    "sample_fraction must be between 0 and 1"
+  )
+
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = TRUE,
+                            sample_fraction = 1.5),
+    "sample_fraction must be between 0 and 1"
+  )
+})
+
+test_that("Path-specific bound validation: compute_path_specific must be logical", {
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = "yes"),
+    "compute_path_specific must be TRUE or FALSE"
+  )
+
+  expect_error(
+    arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
+                            compute_path_specific = 1),
+    "compute_path_specific must be TRUE or FALSE"
+  )
+})
+
+test_that("Path-specific bound works for put options", {
+  bounds_put <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                         option_type = "put",
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  expect_true(!is.na(bounds_put$upper_bound_path_specific))
+  expect_true(bounds_put$lower_bound <= bounds_put$upper_bound_path_specific)
+  expect_true(bounds_put$upper_bound_path_specific <=
+                bounds_put$upper_bound_global)
+})
+
+test_that("Path-specific bound is tighter for put options", {
+  bounds_put <- arithmetic_asian_bounds(100, 110, 1.05, 1.3, 0.7, 0.1, 1, 1, 5,
+                                         option_type = "put",
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  spread_ps <- bounds_put$upper_bound_path_specific - bounds_put$lower_bound
+  spread_global <- bounds_put$upper_bound_global - bounds_put$lower_bound
+
+  expect_true(spread_ps <= spread_global)
+})
+
+test_that("Path-specific bound tightens with lower volatility", {
+  # High volatility
+  bounds_high <- arithmetic_asian_bounds(100, 100, 1.05, 1.3, 0.7, 0.1, 1, 1, 5,
+                                          compute_path_specific = TRUE,
+                                          sample_fraction = 1.0)
+  spread_high_ps <- bounds_high$upper_bound_path_specific -
+                    bounds_high$lower_bound
+
+  # Low volatility
+  bounds_low <- arithmetic_asian_bounds(100, 100, 1.05, 1.1, 0.9, 0.1, 1, 1, 5,
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+  spread_low_ps <- bounds_low$upper_bound_path_specific -
+                   bounds_low$lower_bound
+
+  # Lower volatility should have tighter path-specific bounds
+  expect_true(spread_low_ps < spread_high_ps)
+})
+
+test_that("Path-specific bound is non-negative", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                     compute_path_specific = TRUE)
+
+  expect_true(bounds$upper_bound_path_specific >= 0)
+})
+
+test_that("Path-specific bound is reproducible for exact enumeration", {
+  # Exact enumeration should give deterministic results (no randomness)
+  bounds1 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
+                                      compute_path_specific = TRUE,
+                                      sample_fraction = 1.0)
+  bounds2 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
+                                      compute_path_specific = TRUE,
+                                      sample_fraction = 1.0)
+
+  expect_equal(bounds1$upper_bound_path_specific,
+               bounds2$upper_bound_path_specific)
+  expect_equal(bounds1$n_paths_sampled, bounds2$n_paths_sampled)
+})
+
+test_that("Path-specific bound improvement is significant for high volatility", {
+  # High volatility scenario where path-specific should be tighter
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.5, 0.6, 0.1, 1, 1, 5,
+                                     compute_path_specific = TRUE,
+                                     sample_fraction = 1.0)
+
+  # Calculate improvement: how much path-specific reduces the spread
+  improvement <- (bounds$upper_bound_global - bounds$upper_bound_path_specific)
+
+  # Path-specific should improve (tighten) bounds for high volatility
+  expect_true(improvement > 0)
+  # And path-specific bound should still be above lower bound
+  expect_true(bounds$upper_bound_path_specific > bounds$lower_bound)
+})
+
+test_that("Path-specific bound works with no price impact (lambda=0)", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0, 0, 0, 4,
+                                     compute_path_specific = TRUE)
+
+  expect_true(!is.na(bounds$upper_bound_path_specific))
+  expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific)
+  expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global)
+})
+
+test_that("Path-specific bound increases with price impact", {
+  # No price impact
+  bounds_no <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0, 0, 0, 5,
+                                        compute_path_specific = TRUE,
+                                        sample_fraction = 1.0)
+
+  # With price impact
+  bounds_yes <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.2, 1, 1, 5,
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  # Price impact should increase bounds (for calls)
+  expect_true(bounds_yes$upper_bound_path_specific >=
+                bounds_no$upper_bound_path_specific)
+})
+
+test_that("Path-specific bound varies across moneyness levels", {
+  # Deep ITM
+  bounds_itm <- arithmetic_asian_bounds(100, 80, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  # ATM
+  bounds_atm <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  # Deep OTM
+  bounds_otm <- arithmetic_asian_bounds(100, 120, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
+                                         compute_path_specific = TRUE,
+                                         sample_fraction = 1.0)
+
+  # All should have valid path-specific bounds
+  expect_true(!is.na(bounds_itm$upper_bound_path_specific))
+  expect_true(!is.na(bounds_atm$upper_bound_path_specific))
+  expect_true(!is.na(bounds_otm$upper_bound_path_specific))
+
+  # ITM should have highest bounds
+  expect_true(bounds_itm$upper_bound_path_specific >
+                bounds_otm$upper_bound_path_specific)
+})
+
+test_that("Path-specific bound structure is correct", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
+                                     compute_path_specific = TRUE)
+
+  # Check all required fields
+  expect_true("upper_bound_path_specific" %in% names(bounds))
+  expect_true("n_paths_sampled" %in% names(bounds))
+
+  # Check types
+  expect_true(is.numeric(bounds$upper_bound_path_specific))
+  expect_true(is.numeric(bounds$n_paths_sampled))
+
+  # Check length
+  expect_length(bounds$upper_bound_path_specific, 1)
+  expect_length(bounds$n_paths_sampled, 1)
+})
+
+test_that("Path-specific bound print method includes path-specific info", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
+                                     compute_path_specific = TRUE)
+
+  expect_output(print(bounds), "Upper bound \\(path-spec\\)")
+  expect_output(print(bounds), "sampled .* paths")
+  expect_output(print(bounds), "Midpoint \\(path-spec\\)")
+})
+
+test_that("Path-specific bound backward compatibility: upper_bound field exists", {
+  bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
+                                     compute_path_specific = TRUE)
+
+  # upper_bound should still exist for backward compatibility
+  expect_true("upper_bound" %in% names(bounds))
+  expect_equal(bounds$upper_bound, bounds$upper_bound_global)
+})
+
+test_that("Path-specific bound works for various n values", {
+  for (n in c(1, 2, 3, 5, 8)) {
+    bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
+                                       compute_path_specific = TRUE,
+                                       sample_fraction = 1.0)
+
+    expect_true(!is.na(bounds$upper_bound_path_specific),
+                info = paste("n =", n))
+    expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific,
+                info = paste("n =", n))
+    expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global,
+                info = paste("n =", n))
+    expect_true(bounds$n_paths_sampled > 0, info = paste("n =", n))
+  }
+})
