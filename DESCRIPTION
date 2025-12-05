@@ -2,7 +2,7 @@ Package: AsianOptPI
 Type: Package
 Title: Asian Option Pricing with Price Impact
 Version: 0.1.0
-Date: 2025-11-20
+Date: 2025-12-04
 Authors@R: c(
     person("Priyanshu", "Tiwari",
            email = "tiwari.priyanshu.iitk@gmail.com",
@@ -16,9 +16,10 @@ Description: Implements binomial tree pricing for geometric and arithmetic
     impact mechanism models how hedging volumes affect stock prices, leading
     to modified risk-neutral probabilities. References: Cox, Ross & Rubinstein
     (1979) <doi:10.1016/0304-405X(79)90015-1>.
-License: GPL-3
+License: GPL (>= 3)
+URL: https://github.com/plato-12/AsianOptPI
+BugReports: https://github.com/plato-12/AsianOptPI/issues
 Encoding: UTF-8
-LazyData: true
 Depends:
     R (>= 4.0.0)
 Imports:
@@ -32,5 +33,3 @@ Suggests:
     covr
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
-Roxygen: list(markdown = TRUE)
-SystemRequirements: C++11

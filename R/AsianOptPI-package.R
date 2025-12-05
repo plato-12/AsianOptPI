@@ -59,7 +59,7 @@
 #' Option pricing: A simplified approach.
 #' \emph{Journal of Financial Economics}, 7(3), 229-263.
 #'
-#' Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
+#' Budimir, I., Dragomir, S. S., & Pecaric, J. (2000).
 #' Further reverse results for Jensen's discrete inequality and
 #' applications in information theory.
 #' \emph{Journal of Inequalities in Pure and Applied Mathematics}, 2(1).
@@ -96,5 +96,6 @@
 ## usethis namespace: start
 #' @useDynLib AsianOptPI, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
+#' @importFrom stats pnorm
 ## usethis namespace: end
 NULL

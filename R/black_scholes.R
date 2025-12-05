@@ -6,9 +6,9 @@
 #'
 #' @param S0 Initial stock price (must be positive)
 #' @param K Strike price (must be positive)
-#' @param r Continuously compounded risk-free rate (e.g., 0.05 for 5% annual rate)
+#' @param r Continuously compounded risk-free rate (e.g., 0.05 for 5\% annual rate)
 #' @param sigma Volatility (annualized standard deviation, must be non-negative)
-#' @param T Time to maturity in years (must be positive)
+#' @param time_to_maturity Time to maturity in years (must be positive)
 #'
 #' @return European call option price (numeric)
 #'
@@ -61,27 +61,34 @@
 #'
 #' @examples
 #' # Basic at-the-money call
-#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1)
+#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+#'                          time_to_maturity = 1)
 #'
 #' # Out-of-the-money call
-#' price_black_scholes_call(S0 = 100, K = 110, r = 0.05, sigma = 0.2, T = 1)
+#' price_black_scholes_call(S0 = 100, K = 110, r = 0.05, sigma = 0.2,
+#'                          time_to_maturity = 1)
 #'
 #' # In-the-money call
-#' price_black_scholes_call(S0 = 100, K = 90, r = 0.05, sigma = 0.2, T = 1)
+#' price_black_scholes_call(S0 = 100, K = 90, r = 0.05, sigma = 0.2,
+#'                          time_to_maturity = 1)
 #'
 #' # Effect of volatility
-#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.1, T = 1)
-#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.3, T = 1)
+#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.1,
+#'                          time_to_maturity = 1)
+#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.3,
+#'                          time_to_maturity = 1)
 #'
 #' # Short-dated vs long-dated options
-#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 0.25)
-#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1.0)
+#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+#'                          time_to_maturity = 0.25)
+#' price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+#'                          time_to_maturity = 1.0)
 #'
 #' @seealso \code{\link{price_black_scholes_put}}, \code{\link{price_european_call}},
 #'   \code{\link{price_black_scholes_binomial}}
 #'
 #' @export
-price_black_scholes_call <- function(S0, K, r, sigma, T) {
+price_black_scholes_call <- function(S0, K, r, sigma, time_to_maturity) {
   # Input validation
   if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
     stop("S0 must be a positive number")
@@ -95,29 +102,29 @@ price_black_scholes_call <- function(S0, K, r, sigma, T) {
   if (!is.numeric(sigma) || length(sigma) != 1 || sigma < 0) {
     stop("sigma must be a non-negative number")
   }
-  if (!is.numeric(T) || length(T) != 1 || T <= 0) {
-    stop("T must be a positive number")
+  if (!is.numeric(time_to_maturity) || length(time_to_maturity) != 1 || time_to_maturity <= 0) {
+    stop("time_to_maturity must be a positive number")
   }
 
   # Handle zero volatility case (deterministic stock price)
   if (sigma == 0) {
     # With zero volatility, S_T = S0 * exp(r*T) (risk-neutral growth)
-    S_T <- S0 * exp(r * T)
+    S_T <- S0 * exp(r * time_to_maturity)
     # Discounted payoff
-    return(max(0, S_T - K) * exp(-r * T))
+    return(max(0, S_T - K) * exp(-r * time_to_maturity))
   }
 
   # Handle zero time to maturity
-  if (T < 1e-10) {
+  if (time_to_maturity < 1e-10) {
     return(max(0, S0 - K))
   }
 
   # Calculate d1 and d2
-  d1 <- (log(S0 / K) + (r + 0.5 * sigma^2) * T) / (sigma * sqrt(T))
-  d2 <- d1 - sigma * sqrt(T)
+  d1 <- (log(S0 / K) + (r + 0.5 * sigma^2) * time_to_maturity) / (sigma * sqrt(time_to_maturity))
+  d2 <- d1 - sigma * sqrt(time_to_maturity)
 
   # Black-Scholes call price
-  call_price <- S0 * pnorm(d1) - K * exp(-r * T) * pnorm(d2)
+  call_price <- S0 * pnorm(d1) - K * exp(-r * time_to_maturity) * pnorm(d2)
 
   return(call_price)
 }
@@ -130,9 +137,9 @@ price_black_scholes_call <- function(S0, K, r, sigma, T) {
 #'
 #' @param S0 Initial stock price (must be positive)
 #' @param K Strike price (must be positive)
-#' @param r Continuously compounded risk-free rate (e.g., 0.05 for 5% annual rate)
+#' @param r Continuously compounded risk-free rate (e.g., 0.05 for 5\% annual rate)
 #' @param sigma Volatility (annualized standard deviation, must be non-negative)
-#' @param T Time to maturity in years (must be positive)
+#' @param time_to_maturity Time to maturity in years (must be positive)
 #'
 #' @return European put option price (numeric)
 #'
@@ -162,14 +169,15 @@ price_black_scholes_call <- function(S0, K, r, sigma, T) {
 #'
 #' @examples
 #' # Basic at-the-money put
-#' price_black_scholes_put(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1)
+#' price_black_scholes_put(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+#'                         time_to_maturity = 1)
 #'
 #' # Verify put-call parity
-#' S0 <- 100; K <- 100; r <- 0.05; sigma <- 0.2; T <- 1
-#' call <- price_black_scholes_call(S0, K, r, sigma, T)
-#' put <- price_black_scholes_put(S0, K, r, sigma, T)
+#' S0 <- 100; K <- 100; r <- 0.05; sigma <- 0.2; time_to_maturity <- 1
+#' call <- price_black_scholes_call(S0, K, r, sigma, time_to_maturity)
+#' put <- price_black_scholes_put(S0, K, r, sigma, time_to_maturity)
 #' parity_lhs <- call - put
-#' parity_rhs <- S0 - K * exp(-r * T)
+#' parity_rhs <- S0 - K * exp(-r * time_to_maturity)
 #' cat("Put-Call Parity Check:\n")
 #' cat("C - P =", parity_lhs, "\n")
 #' cat("S - Ke^(-rT) =", parity_rhs, "\n")
@@ -178,7 +186,7 @@ price_black_scholes_call <- function(S0, K, r, sigma, T) {
 #' @seealso \code{\link{price_black_scholes_call}}, \code{\link{price_european_put}}
 #'
 #' @export
-price_black_scholes_put <- function(S0, K, r, sigma, T) {
+price_black_scholes_put <- function(S0, K, r, sigma, time_to_maturity) {
   # Input validation
   if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
     stop("S0 must be a positive number")
@@ -192,27 +200,27 @@ price_black_scholes_put <- function(S0, K, r, sigma, T) {
   if (!is.numeric(sigma) || length(sigma) != 1 || sigma < 0) {
     stop("sigma must be a non-negative number")
   }
-  if (!is.numeric(T) || length(T) != 1 || T <= 0) {
-    stop("T must be a positive number")
+  if (!is.numeric(time_to_maturity) || length(time_to_maturity) != 1 || time_to_maturity <= 0) {
+    stop("time_to_maturity must be a positive number")
   }
 
   # Handle zero volatility case
   if (sigma == 0) {
-    S_T <- S0 * exp(r * T)
-    return(max(0, K - S_T) * exp(-r * T))
+    S_T <- S0 * exp(r * time_to_maturity)
+    return(max(0, K - S_T) * exp(-r * time_to_maturity))
   }
 
   # Handle zero time to maturity
-  if (T < 1e-10) {
+  if (time_to_maturity < 1e-10) {
     return(max(0, K - S0))
   }
 
   # Calculate d1 and d2
-  d1 <- (log(S0 / K) + (r + 0.5 * sigma^2) * T) / (sigma * sqrt(T))
-  d2 <- d1 - sigma * sqrt(T)
+  d1 <- (log(S0 / K) + (r + 0.5 * sigma^2) * time_to_maturity) / (sigma * sqrt(time_to_maturity))
+  d2 <- d1 - sigma * sqrt(time_to_maturity)
 
   # Black-Scholes put price
-  put_price <- K * exp(-r * T) * pnorm(-d2) - S0 * pnorm(-d1)
+  put_price <- K * exp(-r * time_to_maturity) * pnorm(-d2) - S0 * pnorm(-d1)
 
   return(put_price)
 }
@@ -226,7 +234,7 @@ price_black_scholes_put <- function(S0, K, r, sigma, T) {
 #'
 #' @param S0 Initial stock price (must be positive)
 #' @param K Strike price (must be positive)
-#' @param r_gross Gross risk-free rate for total period (e.g., 1.05 for 5% over total period)
+#' @param r_gross Gross risk-free rate for total period (e.g., 1.05 for 5\% over total period)
 #' @param u Up factor in binomial tree (must be > 1)
 #' @param d Down factor in binomial tree (must be < 1 and < u)
 #' @param n Number of time steps (positive integer)
@@ -250,7 +258,7 @@ price_black_scholes_put <- function(S0, K, r, sigma, T) {
 #' compounded annual rate is:
 #' \deqn{r_{continuous} = \frac{\log(r_{gross})}{T} = \log(r_{gross})}
 #'
-#' For example, if \code{r_gross = 1.05} (5% over the total period),
+#' For example, if \code{r_gross = 1.05} (5\% over the total period),
 #' then \code{r_continuous = log(1.05) = 0.04879}.
 #'
 #' @section Convergence:
@@ -306,7 +314,7 @@ price_black_scholes_binomial <- function(S0, K, r_gross, u, d, n,
 
   # Time step
   dt <- 1 / n
-  T <- 1  # Total time in years
+  total_time <- 1  # Total time in years
 
   # Extract volatility from binomial parameters
   # Using CRR construction: u = exp(sigma * sqrt(dt)), d = exp(-sigma * sqrt(dt))
@@ -315,9 +323,9 @@ price_black_scholes_binomial <- function(S0, K, r_gross, u, d, n,
 
   # Call appropriate Black-Scholes function
   if (option_type == "call") {
-    price <- price_black_scholes_call(S0, K, r_continuous, sigma, T)
+    price <- price_black_scholes_call(S0, K, r_continuous, sigma, total_time)
   } else {
-    price <- price_black_scholes_put(S0, K, r_continuous, sigma, T)
+    price <- price_black_scholes_put(S0, K, r_continuous, sigma, total_time)
   }
 
   return(price)

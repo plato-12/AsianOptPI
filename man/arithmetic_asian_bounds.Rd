@@ -49,21 +49,21 @@ upper bound by sampling paths. Default is FALSE.}
 path-specific bound. Default is 100000.}
 
 \item{sample_fraction}{Numeric. Fraction of total paths to sample (between 0 and 1).
-Default is 0.1 (10\\%).}
+Default is 0.1 (10\%).}
 
-\item{validate}{Logical; if TRUE, performs input validation}
+\item{validate}{Logical; if TRUE, performs input validation (default TRUE)}
 }
 \value{
 List containing:
 \describe{
-\item{lower_bound}{Lower bound for arithmetic option (= geometric option price)}
-\item{upper_bound}{Upper bound for arithmetic option (global bound, for backward compatibility)}
-\item{upper_bound_global}{Global upper bound using \eqn{\rho^*}}
-\item{upper_bound_path_specific}{Path-specific upper bound (only if compute_path_specific=TRUE, otherwise NA)}
-\item{rho_star}{Spread parameter \eqn{\rho^*}}
-\item{EQ_G}{Expected geometric average under risk-neutral measure}
-\item{V0_G}{Geometric Asian option price (same as lower_bound)}
-\item{n_paths_sampled}{Number of paths sampled for path-specific bound (0 if not computed)}
+  \item{lower_bound}{Lower bound for arithmetic option (= geometric option price)}
+  \item{upper_bound}{Upper bound for arithmetic option (global bound, for backward compatibility)}
+  \item{upper_bound_global}{Global upper bound using \eqn{\rho^*}}
+  \item{upper_bound_path_specific}{Path-specific upper bound (only if compute_path_specific=TRUE, otherwise NA)}
+  \item{rho_star}{Spread parameter \eqn{\rho^*}}
+  \item{EQ_G}{Expected geometric average under risk-neutral measure}
+  \item{V0_G}{Geometric Asian option price (same as lower_bound)}
+  \item{n_paths_sampled}{Number of paths sampled for path-specific bound (0 if not computed)}
 }
 }
 \description{
@@ -74,22 +74,22 @@ inequality).
 \details{
 The arithmetic Asian option has payoff:
 \itemize{
-\item Call: \eqn{V_n = \max(0, A_n - K)}
-\item Put: \eqn{V_n = \max(0, K - A_n)}
+  \item Call: \eqn{V_n = \max(0, A_n - K)}
+  \item Put: \eqn{V_n = \max(0, K - A_n)}
 }
 where \eqn{A_n = \frac{1}{n+1}\sum_{i=0}^{n} S_i}
 
 Since \eqn{A_n \geq G_n} (AM-GM inequality), we have:
 \deqn{V_0^A \geq V_0^G}
 
-\strong{Global Upper Bound:}
+**Global Upper Bound:**
 
 The global upper bound uses the worst-case spread parameter:
 \deqn{V_0^A \leq V_0^G + \frac{(\rho^* - 1)}{r^n} \mathbb{E}^Q[G_n]}
 
 where \eqn{\rho^* = \exp\left[\frac{(\tilde{u}^n - \tilde{d}^n)^2}{4\tilde{u}^n\tilde{d}^n}\right]}
 
-\strong{Path-Specific Upper Bound:}
+**Path-Specific Upper Bound:**
 
 A tighter bound can be obtained by using path-specific \eqn{\rho(\omega)} values:
 \deqn{V_0^A \leq V_0^G + \frac{1}{r^n}\sum_{\omega} P(\omega) \cdot (\rho(\omega) - 1) \cdot G_n(\omega)}
@@ -134,7 +134,7 @@ if (!is.na(bounds_ps$upper_bound_path_specific)) {
 
 }
 \references{
-Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
+Budimir, I., Dragomir, S. S., & Pecaric, J. (2000).
 Further reverse results for Jensen's discrete inequality and
 applications in information theory.
 \emph{Journal of Inequalities in Pure and Applied Mathematics}, 2(1).

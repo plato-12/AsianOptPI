@@ -111,11 +111,10 @@ Rcpp::List arithmetic_asian_bounds_cpp(
     );
 }
 
-//' Convert integer index to binary path
-//'
-//' @param idx Path index (0 to 2^n - 1)
-//' @param n Number of steps
-//' @return Vector of 0s and 1s representing the path
+// Convert integer index to binary path
+// @param idx Path index (0 to 2^n - 1)
+// @param n Number of steps
+// @return Vector of 0s and 1s representing the path
 std::vector<int> index_to_path(int idx, int n) {
     std::vector<int> path(n);
     for (int j = 0; j < n; j++) {
@@ -124,10 +123,9 @@ std::vector<int> index_to_path(int idx, int n) {
     return path;
 }
 
-//' Compute path-specific rho parameter
-//'
-//' @param prices Vector of stock prices along the path
-//' @return rho(omega) = exp((S_M - S_m)^2 / (4 * S_m * S_M))
+// Compute path-specific rho parameter
+// @param prices Vector of stock prices along the path
+// @return rho(omega) = exp((S_M - S_m)^2 / (4 * S_m * S_M))
 double compute_path_rho(const std::vector<double>& prices) {
     double S_min = *std::min_element(prices.begin(), prices.end());
     double S_max = *std::max_element(prices.begin(), prices.end());
@@ -156,10 +154,19 @@ double compute_path_rho(const std::vector<double>& prices) {
 //' @param n Number of time steps
 //' @param compute_path_specific If TRUE, compute path-specific bound
 //' @param max_sample_size Maximum number of paths to sample (default 100000)
-//' @param sample_fraction Fraction of paths to sample (default 0.1 = 10%)
+//' @param sample_fraction Fraction of paths to sample (default 0.1 = 10\%)
 //' @param option_type Type of option: "call" or "put" (default: "call")
 //'
-//' @return List containing bounds and diagnostic information
+//' @return List with components:
+//' \itemize{
+//'   \item \code{lower_bound}: Lower bound (geometric option price)
+//'   \item \code{upper_bound_global}: Global upper bound using rho*
+//'   \item \code{upper_bound_path_specific}: Path-specific upper bound (NA if not computed)
+//'   \item \code{rho_star}: Spread parameter
+//'   \item \code{EQ_G}: Expected geometric average
+//'   \item \code{V0_G}: Geometric option price (same as lower_bound)
+//'   \item \code{n_paths_sampled}: Number of paths sampled
+//' }
 //'
 //' @export
 // [[Rcpp::export]]

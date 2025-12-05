@@ -55,7 +55,7 @@
 #' Option pricing: A simplified approach.
 #' \emph{Journal of Financial Economics}, 7(3), 229-263.
 #'
-#' @seealso \code{\link{arithmetic_asian_bounds}}, \code{\link{compute_p_eff}}
+#' @seealso \code{\link{arithmetic_asian_bounds}}, \code{\link{compute_p_adj}}
 price_geometric_asian <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                    option_type = "call",
                                    validate = TRUE) {

@@ -4,7 +4,17 @@
 #' using the relationship between arithmetic and geometric means (Jensen's
 #' inequality).
 #'
-#' @inheritParams price_geometric_asian
+#' @param S0 Initial stock price (must be positive)
+#' @param K Strike price (must be positive)
+#' @param r Gross risk-free rate per period (e.g., 1.05)
+#' @param u Base up factor in CRR model (must be > d)
+#' @param d Base down factor in CRR model (must be positive)
+#' @param lambda Price impact coefficient (non-negative)
+#' @param v_u Hedging volume on up move (non-negative)
+#' @param v_d Hedging volume on down move (non-negative)
+#' @param n Number of time steps (positive integer, recommended n <= 20)
+#' @param option_type Character; either "call" (default) or "put"
+#' @param validate Logical; if TRUE, performs input validation (default TRUE)
 #' @param compute_path_specific Logical. If TRUE, computes the tighter path-specific
 #'   upper bound by sampling paths. Default is FALSE.
 #' @param max_sample_size Integer. Maximum number of paths to sample when computing
@@ -88,7 +98,7 @@
 #' }
 #'
 #' @references
-#' Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
+#' Budimir, I., Dragomir, S. S., & Pecaric, J. (2000).
 #' Further reverse results for Jensen's discrete inequality and
 #' applications in information theory.
 #' \emph{Journal of Inequalities in Pure and Applied Mathematics}, 2(1).
@@ -161,7 +171,7 @@ print.arithmetic_bounds <- function(x, ...) {
                 mean(c(x$lower_bound, x$upper_bound_global))))
   }
 
-  cat(sprintf("Spread (ρ*):               %.6f\n", x$rho_star))
+  cat(sprintf("Spread (rho*):             %.6f\n", x$rho_star))
   cat(sprintf("E^Q[G_n]:                  %.6f\n", x$EQ_G))
 
   invisible(x)

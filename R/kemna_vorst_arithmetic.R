@@ -26,14 +26,12 @@
 #'   reduction factor. Default is FALSE.
 #'
 #' @return If \code{return_diagnostics = FALSE}, returns a numeric value (the
-#'   estimated option price).
-#'
-#'   If \code{return_diagnostics = TRUE}, returns a list with components:
+#'   estimated option price). If \code{return_diagnostics = TRUE}, returns a list with components:
 #'   \describe{
 #'     \item{price}{Estimated option price}
 #'     \item{std_error}{Standard error of the estimate}
-#'     \item{lower_ci}{Lower 95% confidence interval}
-#'     \item{upper_ci}{Upper 95% confidence interval}
+#'     \item{lower_ci}{Lower 95\% confidence interval}
+#'     \item{upper_ci}{Upper 95\% confidence interval}
 #'     \item{geometric_price}{Analytical geometric average price (control variate)}
 #'     \item{correlation}{Correlation between arithmetic and geometric payoffs}
 #'     \item{variance_reduction_factor}{Ratio of variances (with/without control)}

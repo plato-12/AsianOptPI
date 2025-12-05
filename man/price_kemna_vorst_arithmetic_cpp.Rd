@@ -44,13 +44,13 @@ price_kemna_vorst_arithmetic_cpp(
 \value{
 List containing:
 \describe{
-\item{price}{Estimated option price}
-\item{std_error}{Standard error of the estimate}
-\item{lower_ci}{Lower 95\\% confidence interval}
-\item{upper_ci}{Upper 95\\% confidence interval}
-\item{geometric_price}{Analytical geometric average price (control variate)}
-\item{correlation}{Correlation between arithmetic and geometric payoffs}
-\item{variance_reduction_factor}{Ratio of variances (with/without control variate)}
+  \item{price}{Estimated option price}
+  \item{std_error}{Standard error of the estimate}
+  \item{lower_ci}{Lower 95\% confidence interval}
+  \item{upper_ci}{Upper 95\% confidence interval}
+  \item{geometric_price}{Analytical geometric average price (control variate)}
+  \item{correlation}{Correlation between arithmetic and geometric payoffs}
+  \item{variance_reduction_factor}{Ratio of variances (with/without control variate)}
 }
 }
 \description{
@@ -60,19 +60,21 @@ benchmark implementation WITHOUT price impact.
 }
 \details{
 The algorithm follows Kemna & Vorst (1990):
-\enumerate{
-\item Generate price paths under risk-neutral dynamics:
-\deqn{\log(S_{i+1}) = \log(S_i) + (r - \sigma^2/2)\Delta t + \sigma\sqrt{\Delta t} Z_i}
-where \eqn{Z_i \sim N(0,1)}
-\item Calculate arithmetic and geometric averages for each path:
-\deqn{A = \frac{1}{n+1}\sum_{i=0}^{n} S_i}
-\deqn{G = \left(\prod_{i=0}^{n} S_i\right)^{1/(n+1)}}
-\item Calculate discounted payoffs:
-\deqn{Y = e^{-r\tau} \max(A - K, 0)}
-\deqn{W = e^{-r\tau} \max(G - K, 0)}
-\item Use control variate method to reduce variance:
-\deqn{\hat{C}_{enhanced} = E[W] + \frac{1}{M}\sum_{j=1}^{M}(Y_j - W_j)}
-}
+
+1. Generate price paths under risk-neutral dynamics:
+   \deqn{\log(S_{i+1}) = \log(S_i) + (r - \sigma^2/2)\Delta t + \sigma\sqrt{\Delta t} Z_i}
+   where \eqn{Z_i \sim N(0,1)}
+
+2. Calculate arithmetic and geometric averages for each path:
+   \deqn{A = \frac{1}{n+1}\sum_{i=0}^{n} S_i}
+   \deqn{G = \left(\prod_{i=0}^{n} S_i\right)^{1/(n+1)}}
+
+3. Calculate discounted payoffs:
+   \deqn{Y = e^{-r\tau} \max(A - K, 0)}
+   \deqn{W = e^{-r\tau} \max(G - K, 0)}
+
+4. Use control variate method to reduce variance:
+   \deqn{\hat{C}_{enhanced} = E[W] + \frac{1}{M}\sum_{j=1}^{M}(Y_j - W_j)}
 
 where \eqn{E[W]} is the analytical geometric average price.
 

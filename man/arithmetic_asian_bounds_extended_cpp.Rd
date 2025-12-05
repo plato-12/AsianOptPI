@@ -48,7 +48,16 @@ arithmetic_asian_bounds_extended_cpp(
 \item{option_type}{Type of option: "call" or "put" (default: "call")}
 }
 \value{
-List containing bounds and diagnostic information
+List with components:
+\itemize{
+  \item \code{lower_bound}: Lower bound (geometric option price)
+  \item \code{upper_bound_global}: Global upper bound using rho*
+  \item \code{upper_bound_path_specific}: Path-specific upper bound (NA if not computed)
+  \item \code{rho_star}: Spread parameter
+  \item \code{EQ_G}: Expected geometric average
+  \item \code{V0_G}: Geometric option price (same as lower_bound)
+  \item \code{n_paths_sampled}: Number of paths sampled
+}
 }
 \description{
 Computes lower bound (geometric option) and two upper bounds:

@@ -4,7 +4,7 @@
 \alias{price_black_scholes_put}
 \title{Black-Scholes European Put Option Price}
 \usage{
-price_black_scholes_put(S0, K, r, sigma, T)
+price_black_scholes_put(S0, K, r, sigma, time_to_maturity)
 }
 \arguments{
 \item{S0}{Initial stock price (must be positive)}
@@ -15,7 +15,7 @@ price_black_scholes_put(S0, K, r, sigma, T)
 
 \item{sigma}{Volatility (annualized standard deviation, must be non-negative)}
 
-\item{T}{Time to maturity in years (must be positive)}
+\item{time_to_maturity}{Time to maturity in years (must be positive)}
 }
 \value{
 European put option price (numeric)
@@ -47,14 +47,15 @@ This relationship holds exactly for European options without dividends.
 
 \examples{
 # Basic at-the-money put
-price_black_scholes_put(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1)
+price_black_scholes_put(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+                        time_to_maturity = 1)
 
 # Verify put-call parity
-S0 <- 100; K <- 100; r <- 0.05; sigma <- 0.2; T <- 1
-call <- price_black_scholes_call(S0, K, r, sigma, T)
-put <- price_black_scholes_put(S0, K, r, sigma, T)
+S0 <- 100; K <- 100; r <- 0.05; sigma <- 0.2; time_to_maturity <- 1
+call <- price_black_scholes_call(S0, K, r, sigma, time_to_maturity)
+put <- price_black_scholes_put(S0, K, r, sigma, time_to_maturity)
 parity_lhs <- call - put
-parity_rhs <- S0 - K * exp(-r * T)
+parity_rhs <- S0 - K * exp(-r * time_to_maturity)
 cat("Put-Call Parity Check:\n")
 cat("C - P =", parity_lhs, "\n")
 cat("S - Ke^(-rT) =", parity_rhs, "\n")

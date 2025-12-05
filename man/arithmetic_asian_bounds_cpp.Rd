@@ -41,10 +41,10 @@ arithmetic_asian_bounds_cpp(
 \value{
 List containing:
 \itemize{
-\item \code{lower_bound}: Lower bound (geometric option price)
-\item \code{upper_bound}: Upper bound
-\item \code{rho_star}: Spread parameter
-\item \code{EQ_G}: Expected geometric average
+  \item \code{lower_bound}: Lower bound (geometric option price)
+  \item \code{upper_bound}: Upper bound
+  \item \code{rho_star}: Spread parameter
+  \item \code{EQ_G}: Expected geometric average
 }
 }
 \description{

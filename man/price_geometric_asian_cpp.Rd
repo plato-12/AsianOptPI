@@ -22,7 +22,7 @@ price_geometric_asian_cpp(
 
 \item{K}{Strike price (positive)}
 
-\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\\% rate)}
+\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\% rate)}
 
 \item{u}{Base up factor in CRR model (e.g., 1.2)}
 
@@ -48,16 +48,16 @@ binomial tree model with price impact from hedging activities.
 \details{
 The function enumerates all 2^n possible price paths and computes:
 \itemize{
-\item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
-\item Call payoff: \eqn{\max(0, G - K)}
-\item Put payoff: \eqn{\max(0, K - G)}
-\item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
+  \item Geometric average: \eqn{G = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
+  \item Call payoff: \eqn{\max(0, G - K)}
+  \item Put payoff: \eqn{\max(0, K - G)}
+  \item Option value: \eqn{(1/r^n) \cdot \sum_{paths} p^k (1-p)^{(n-k)} \cdot payoff}
 }
 
 Price impact modifies the up and down factors:
 \itemize{
-\item Adjusted up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
-\item Adjusted down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
+  \item Adjusted up factor: \eqn{u_{tilde} = u \cdot \exp(\lambda \cdot v_u)}
+  \item Adjusted down factor: \eqn{d_{tilde} = d \cdot \exp(-\lambda \cdot v_d)}
 }
 }
 \examples{

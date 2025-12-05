@@ -60,7 +60,7 @@
 #' \emph{Journal of Financial Economics}, 7(3), 229-263.
 #' \doi{10.1016/0304-405X(79)90015-1}
 #'
-#' @seealso \code{\link{price_european_put}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_eff}}
+#' @seealso \code{\link{price_european_put}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 price_european_call <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                  validate = TRUE) {
   # Input validation
@@ -140,7 +140,7 @@ price_european_call <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
 #' \emph{Journal of Financial Economics}, 7(3), 229-263.
 #' \doi{10.1016/0304-405X(79)90015-1}
 #'
-#' @seealso \code{\link{price_european_call}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_eff}}
+#' @seealso \code{\link{price_european_call}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 price_european_put <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                 validate = TRUE) {
   # Input validation
@@ -216,7 +216,7 @@ price_european_put <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
 #' \doi{10.1016/0304-405X(79)90015-1}
 #'
 #' @seealso \code{\link{price_european_call}}, \code{\link{price_european_put}},
-#'   \code{\link{price_geometric_asian}}, \code{\link{compute_p_eff}}
+#'   \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 price_european <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                            option_type = "call",
                            validate = TRUE) {

@@ -41,14 +41,14 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
   # Check no-arbitrage condition
   if (d_tilde >= r) {
     stop(sprintf(
-      "No-arbitrage condition violated: d_tilde (%.4f) >= r (%.4f). Need d̃ < r.",
+      "No-arbitrage condition violated: d_tilde (%.4f) >= r (%.4f). Need d_tilde < r.",
       d_tilde, r
     ))
   }
 
   if (r >= u_tilde) {
     stop(sprintf(
-      "No-arbitrage condition violated: r (%.4f) >= u_tilde (%.4f). Need r < ũ.",
+      "No-arbitrage condition violated: r (%.4f) >= u_tilde (%.4f). Need r < u_tilde.",
       r, u_tilde
     ))
   }

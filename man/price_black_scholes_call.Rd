@@ -4,7 +4,7 @@
 \alias{price_black_scholes_call}
 \title{Black-Scholes European Call Option Price}
 \usage{
-price_black_scholes_call(S0, K, r, sigma, T)
+price_black_scholes_call(S0, K, r, sigma, time_to_maturity)
 }
 \arguments{
 \item{S0}{Initial stock price (must be positive)}
@@ -15,7 +15,7 @@ price_black_scholes_call(S0, K, r, sigma, T)
 
 \item{sigma}{Volatility (annualized standard deviation, must be non-negative)}
 
-\item{T}{Time to maturity in years (must be positive)}
+\item{time_to_maturity}{Time to maturity in years (must be positive)}
 }
 \value{
 European call option price (numeric)
@@ -37,10 +37,10 @@ and \eqn{N(\cdot)} is the cumulative standard normal distribution function.
 
 This formula assumes:
 \itemize{
-\item Stock price follows geometric Brownian motion: \eqn{dS_t = rS_t dt + \sigma S_t dW_t}
-\item No dividends
-\item Constant risk-free rate and volatility
-\item Continuous trading with no transaction costs or price impact
+  \item Stock price follows geometric Brownian motion: \eqn{dS_t = rS_t dt + \sigma S_t dW_t}
+  \item No dividends
+  \item Constant risk-free rate and volatility
+  \item Continuous trading with no transaction costs or price impact
 }
 }
 \section{Connection to Binomial Model}{
@@ -48,10 +48,10 @@ This formula assumes:
 As the number of time steps \eqn{n \to \infty}, the Cox-Ross-Rubinstein (CRR)
 binomial model converges to the Black-Scholes price, provided:
 \itemize{
-\item Time step: \eqn{\Delta t = T/n}
-\item Up factor: \eqn{u = e^{\sigma\sqrt{\Delta t}}}
-\item Down factor: \eqn{d = e^{-\sigma\sqrt{\Delta t}}}
-\item Gross rate per step: \eqn{r_{gross} = e^{r \Delta t}}
+  \item Time step: \eqn{\Delta t = T/n}
+  \item Up factor: \eqn{u = e^{\sigma\sqrt{\Delta t}}}
+  \item Down factor: \eqn{d = e^{-\sigma\sqrt{\Delta t}}}
+  \item Gross rate per step: \eqn{r_{gross} = e^{r \Delta t}}
 }
 
 See \code{vignette("theory", package = "AsianOptPI")} and
@@ -68,21 +68,28 @@ Unlike the binomial functions in this package which use gross rates
 
 \examples{
 # Basic at-the-money call
-price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1)
+price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+                         time_to_maturity = 1)
 
 # Out-of-the-money call
-price_black_scholes_call(S0 = 100, K = 110, r = 0.05, sigma = 0.2, T = 1)
+price_black_scholes_call(S0 = 100, K = 110, r = 0.05, sigma = 0.2,
+                         time_to_maturity = 1)
 
 # In-the-money call
-price_black_scholes_call(S0 = 100, K = 90, r = 0.05, sigma = 0.2, T = 1)
+price_black_scholes_call(S0 = 100, K = 90, r = 0.05, sigma = 0.2,
+                         time_to_maturity = 1)
 
 # Effect of volatility
-price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.1, T = 1)
-price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.3, T = 1)
+price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.1,
+                         time_to_maturity = 1)
+price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.3,
+                         time_to_maturity = 1)
 
 # Short-dated vs long-dated options
-price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 0.25)
-price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1.0)
+price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+                         time_to_maturity = 0.25)
+price_black_scholes_call(S0 = 100, K = 100, r = 0.05, sigma = 0.2,
+                         time_to_maturity = 1.0)
 
 }
 \references{
@@ -97,5 +104,5 @@ Option pricing: A simplified approach.
 }
 \seealso{
 \code{\link{price_black_scholes_put}}, \code{\link{price_european_call}},
-\code{\link{price_black_scholes_binomial}}
+  \code{\link{price_black_scholes_binomial}}
 }

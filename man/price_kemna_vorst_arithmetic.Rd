@@ -25,7 +25,7 @@ Must be positive.}
 
 \item{K}{Numeric. Strike price. Must be positive.}
 
-\item{r}{Numeric. Continuously compounded risk-free rate (e.g., 0.05 for 5\\%).
+\item{r}{Numeric. Continuously compounded risk-free rate (e.g., 0.05 for 5\%).
 Use \code{log(r_gross)} to convert from gross rate.}
 
 \item{sigma}{Numeric. Volatility (annualized standard deviation). Must be
@@ -54,20 +54,18 @@ reduction factor. Default is FALSE.}
 }
 \value{
 If \code{return_diagnostics = FALSE}, returns a numeric value (the
-estimated option price).
-
-If \code{return_diagnostics = TRUE}, returns a list with components:
-\describe{
-\item{price}{Estimated option price}
-\item{std_error}{Standard error of the estimate}
-\item{lower_ci}{Lower 95\% confidence interval}
-\item{upper_ci}{Upper 95\% confidence interval}
-\item{geometric_price}{Analytical geometric average price (control variate)}
-\item{correlation}{Correlation between arithmetic and geometric payoffs}
-\item{variance_reduction_factor}{Ratio of variances (with/without control)}
-\item{n_simulations}{Number of Monte Carlo simulations used}
-\item{n_steps}{Number of time steps in each simulation}
-}
+  estimated option price). If \code{return_diagnostics = TRUE}, returns a list with components:
+  \describe{
+    \item{price}{Estimated option price}
+    \item{std_error}{Standard error of the estimate}
+    \item{lower_ci}{Lower 95\% confidence interval}
+    \item{upper_ci}{Upper 95\% confidence interval}
+    \item{geometric_price}{Analytical geometric average price (control variate)}
+    \item{correlation}{Correlation between arithmetic and geometric payoffs}
+    \item{variance_reduction_factor}{Ratio of variances (with/without control)}
+    \item{n_simulations}{Number of Monte Carlo simulations used}
+    \item{n_steps}{Number of time steps in each simulation}
+  }
 }
 \description{
 Calculates the price of an arithmetic average Asian option using Monte Carlo
@@ -87,13 +85,13 @@ simulation with a powerful variance reduction technique:
 
 \strong{Control Variate Method:}
 \enumerate{
-\item For each simulated path, calculate both arithmetic average \eqn{A}
-and geometric average \eqn{G}
-\item Calculate discounted payoffs: \eqn{Y = e^{-r\tau}\max(A-K,0)} and
-\eqn{W = e^{-r\tau}\max(G-K,0)}
-\item The enhanced estimate is:
-\deqn{\hat{C} = E[W] + \frac{1}{M}\sum_{j=1}^{M}(Y_j - W_j)}
-where \eqn{E[W]} is the analytical geometric average price
+  \item For each simulated path, calculate both arithmetic average \eqn{A}
+        and geometric average \eqn{G}
+  \item Calculate discounted payoffs: \eqn{Y = e^{-r\tau}\max(A-K,0)} and
+        \eqn{W = e^{-r\tau}\max(G-K,0)}
+  \item The enhanced estimate is:
+        \deqn{\hat{C} = E[W] + \frac{1}{M}\sum_{j=1}^{M}(Y_j - W_j)}
+        where \eqn{E[W]} is the analytical geometric average price
 }
 
 \strong{Why This Works:}
@@ -108,16 +106,16 @@ accuracy.
 
 \strong{Recommended Settings:}
 \itemize{
-\item \code{M = 10000}: Good balance of speed and accuracy
-\item \code{M = 100000}: High accuracy for final pricing
-\item \code{n = 50-250}: Typical for daily/weekly averaging over several months
-\item Always use \code{use_control_variate = TRUE} (default)
+  \item \code{M = 10000}: Good balance of speed and accuracy
+  \item \code{M = 100000}: High accuracy for final pricing
+  \item \code{n = 50-250}: Typical for daily/weekly averaging over several months
+  \item Always use \code{use_control_variate = TRUE} (default)
 }
 }
 \section{Note on Risk-Free Rate}{
 
 This function expects \code{r} as a \strong{continuously compounded rate}
-(e.g., \code{r = 0.05} for 5\\% per annum), which is standard for continuous-time
+(e.g., \code{r = 0.05} for 5\% per annum), which is standard for continuous-time
 models like Black-Scholes.
 
 If you have a gross rate (e.g., \code{r_gross = 1.05}), convert it using:

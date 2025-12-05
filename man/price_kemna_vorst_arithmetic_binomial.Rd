@@ -23,7 +23,7 @@ price_kemna_vorst_arithmetic_binomial(
 
 \item{K}{Numeric. Strike price. Must be positive.}
 
-\item{r}{Numeric. Gross risk-free rate per period (e.g., 1.05 for 5\\%).}
+\item{r}{Numeric. Gross risk-free rate per period (e.g., 1.05 for 5\%).}
 
 \item{u}{Numeric. Up factor in binomial tree. Must be > 1.}
 
@@ -55,9 +55,9 @@ calls \code{price_kemna_vorst_arithmetic}.
 
 Conversion formulas:
 \itemize{
-\item \eqn{r_{continuous} = \log(r_{gross})}
-\item \eqn{\sigma = \log(u/d) / (2\sqrt{\Delta t})} where \eqn{\Delta t = 1/n}
-\item \eqn{T_0 = 0}, \eqn{T = 1}
+  \item \eqn{r_{continuous} = \log(r_{gross})}
+  \item \eqn{\sigma = \log(u/d) / (2\sqrt{\Delta t})} where \eqn{\Delta t = 1/n}
+  \item \eqn{T_0 = 0}, \eqn{T = 1}
 }
 }
 \examples{

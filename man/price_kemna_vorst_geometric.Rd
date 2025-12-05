@@ -12,7 +12,7 @@ Must be positive.}
 
 \item{K}{Numeric. Strike price. Must be positive.}
 
-\item{r}{Numeric. Gross risk-free interest rate per period (e.g., 1.05 for 5\%).
+\item{r}{Numeric. Gross risk-free interest rate per period (e.g., 1.05 for 5%).
 Must be positive.}
 
 \item{sigma}{Numeric. Volatility (annualized standard deviation). Must be
@@ -62,7 +62,7 @@ This is analogous to the Black-Scholes formula with adjusted parameters:
 \section{Note on Risk-Free Rate}{
 
 The parameter \code{r} should be specified as a \strong{gross rate}
-(e.g., \code{r = 1.05} for 5\\% per period), NOT as a net rate
+(e.g., \code{r = 1.05} for 5\% per period), NOT as a net rate
 (NOT \code{r = 0.05}). This is standard in the binomial model and consistent
 with the rest of the AsianOptPI package.
 

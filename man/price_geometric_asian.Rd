@@ -52,16 +52,16 @@ hedging activities.
 \details{
 The geometric Asian option payoff is:
 \itemize{
-\item Call: \eqn{V_n = \max(0, G_n - K)}
-\item Put: \eqn{V_n = \max(0, K - G_n)}
+  \item Call: \eqn{V_n = \max(0, G_n - K)}
+  \item Put: \eqn{V_n = \max(0, K - G_n)}
 }
 where \eqn{G_n = (S_0 \cdot S_1 \cdot \ldots \cdot S_n)^{1/(n+1)}}
 
 Price impact modifies the stock dynamics:
 \itemize{
-\item Effective up factor: \eqn{\tilde{u} = u \cdot e^{\lambda v^u}}
-\item Effective down factor: \eqn{\tilde{d} = d \cdot e^{-\lambda v^d}}
-\item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+  \item Effective up factor: \eqn{\tilde{u} = u \cdot e^{\lambda v^u}}
+  \item Effective down factor: \eqn{\tilde{d} = d \cdot e^{-\lambda v^d}}
+  \item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 
 The function enumerates all \eqn{2^n} possible price paths, making it
@@ -87,5 +87,5 @@ Option pricing: A simplified approach.
 \emph{Journal of Financial Economics}, 7(3), 229-263.
 }
 \seealso{
-\code{\link{arithmetic_asian_bounds}}, \code{\link{compute_p_eff}}
+\code{\link{arithmetic_asian_bounds}}, \code{\link{compute_p_adj}}
 }

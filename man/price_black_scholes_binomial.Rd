@@ -81,5 +81,5 @@ Option pricing: A simplified approach.
 }
 \seealso{
 \code{\link{price_black_scholes_call}}, \code{\link{price_black_scholes_put}},
-\code{\link{price_european_call}}, \code{\link{price_european_put}}
+  \code{\link{price_european_call}}, \code{\link{price_european_put}}
 }

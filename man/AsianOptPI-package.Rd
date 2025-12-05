@@ -13,11 +13,11 @@ Cox-Ross-Rubinstein (CRR) model with the replicating portfolio method.
 \section{Main Functions}{
 
 \itemize{
-\item \code{\link{price_geometric_asian}}: Exact pricing for geometric Asian calls
-\item \code{\link{arithmetic_asian_bounds}}: Bounds for arithmetic Asian calls
-\item \code{\link{compute_p_adj}}: Compute adjusted risk-neutral probability
-\item \code{\link{compute_adjusted_factors}}: Compute modified up/down factors
-\item \code{\link{check_no_arbitrage}}: Validate no-arbitrage condition
+  \item \code{\link{price_geometric_asian}}: Exact pricing for geometric Asian calls
+  \item \code{\link{arithmetic_asian_bounds}}: Bounds for arithmetic Asian calls
+  \item \code{\link{compute_p_adj}}: Compute adjusted risk-neutral probability
+  \item \code{\link{compute_adjusted_factors}}: Compute modified up/down factors
+  \item \code{\link{check_no_arbitrage}}: Validate no-arbitrage condition
 }
 }
 
@@ -28,9 +28,9 @@ When market makers hedge options, their trading volume causes price movements:
 
 This modifies the binomial tree dynamics:
 \itemize{
-\item Adjusted up move: \eqn{S \to S \cdot u \cdot e^{\lambda v^u}}
-\item Adjusted down move: \eqn{S \to S \cdot d \cdot e^{-\lambda v^d}}
-\item Risk-neutral probability: \eqn{p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+  \item Adjusted up move: \eqn{S \to S \cdot u \cdot e^{\lambda v^u}}
+  \item Adjusted down move: \eqn{S \to S \cdot d \cdot e^{-\lambda v^d}}
+  \item Risk-neutral probability: \eqn{p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 }
 
@@ -64,9 +64,9 @@ All pricing functions validate this condition automatically.
 
 The implementation enumerates all \eqn{2^n} possible price paths:
 \itemize{
-\item \eqn{n \leq 15}: Fast (< 1 second)
-\item \eqn{n = 20}: ~1 million paths (~10 seconds)
-\item \eqn{n > 20}: Warning issued automatically
+  \item \eqn{n \leq 15}: Fast (< 1 second)
+  \item \eqn{n = 20}: ~1 million paths (~10 seconds)
+  \item \eqn{n > 20}: Warning issued automatically
 }
 }
 
@@ -102,10 +102,18 @@ Cox, J. C., Ross, S. A., & Rubinstein, M. (1979).
 Option pricing: A simplified approach.
 \emph{Journal of Financial Economics}, 7(3), 229-263.
 
-Budimir, I., Dragomir, S. S., & Pečarić, J. (2000).
+Budimir, I., Dragomir, S. S., & Pecaric, J. (2000).
 Further reverse results for Jensen's discrete inequality and
 applications in information theory.
 \emph{Journal of Inequalities in Pure and Applied Mathematics}, 2(1).
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/plato-12/AsianOptPI}
+  \item Report bugs at \url{https://github.com/plato-12/AsianOptPI/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Priyanshu Tiwari \email{tiwari.priyanshu.iitk@gmail.com}

@@ -10,7 +10,7 @@
 test_that("Black-Scholes call option has correct properties", {
   # Basic computation
   price <- price_black_scholes_call(S0 = 100, K = 100, r = 0.05,
-                                     sigma = 0.2, T = 1)
+                                     sigma = 0.2, time_to_maturity = 1)
 
   expect_true(is.numeric(price))
   expect_true(price > 0)
@@ -139,13 +139,13 @@ test_that("BS call input validation works", {
   # Negative T
   expect_error(
     price_black_scholes_call(100, 100, 0.05, 0.2, -1),
-    "T must be a positive number"
+    "time_to_maturity must be a positive number"
   )
 
   # Zero T
   expect_error(
     price_black_scholes_call(100, 100, 0.05, 0.2, 0),
-    "T must be a positive number"
+    "time_to_maturity must be a positive number"
   )
 })
 
@@ -163,7 +163,7 @@ test_that("BS call results are reproducible", {
 test_that("Black-Scholes put option has correct properties", {
   # Basic computation
   price <- price_black_scholes_put(S0 = 100, K = 100, r = 0.05,
-                                    sigma = 0.2, T = 1)
+                                    sigma = 0.2, time_to_maturity = 1)
 
   expect_true(is.numeric(price))
   expect_true(price > 0)
@@ -259,7 +259,7 @@ test_that("BS put input validation works", {
   # Negative T
   expect_error(
     price_black_scholes_put(100, 100, 0.05, 0.2, -1),
-    "T must be a positive number"
+    "time_to_maturity must be a positive number"
   )
 })
 
@@ -294,20 +294,20 @@ test_that("Black-Scholes put-call parity holds exactly", {
 test_that("Put-call parity holds for various parameter combinations", {
   # Test multiple scenarios
   scenarios <- list(
-    list(S0 = 100, K = 100, r = 0.05, sigma = 0.2, T = 1),
-    list(S0 = 50, K = 60, r = 0.03, sigma = 0.3, T = 0.5),
-    list(S0 = 150, K = 140, r = 0.08, sigma = 0.15, T = 2),
-    list(S0 = 80, K = 100, r = 0.02, sigma = 0.4, T = 0.25)
+    list(S0 = 100, K = 100, r = 0.05, sigma = 0.2, time_to_maturity = 1),
+    list(S0 = 50, K = 60, r = 0.03, sigma = 0.3, time_to_maturity = 0.5),
+    list(S0 = 150, K = 140, r = 0.08, sigma = 0.15, time_to_maturity = 2),
+    list(S0 = 80, K = 100, r = 0.02, sigma = 0.4, time_to_maturity = 0.25)
   )
 
   for (scenario in scenarios) {
     call <- price_black_scholes_call(scenario$S0, scenario$K, scenario$r,
-                                      scenario$sigma, scenario$T)
+                                      scenario$sigma, scenario$time_to_maturity)
     put <- price_black_scholes_put(scenario$S0, scenario$K, scenario$r,
-                                    scenario$sigma, scenario$T)
+                                    scenario$sigma, scenario$time_to_maturity)
 
     parity_lhs <- call - put
-    parity_rhs <- scenario$S0 - scenario$K * exp(-scenario$r * scenario$T)
+    parity_rhs <- scenario$S0 - scenario$K * exp(-scenario$r * scenario$time_to_maturity)
 
     expect_equal(parity_lhs, parity_rhs, tolerance = 1e-10,
                  info = paste("Failed for S0 =", scenario$S0, "K =", scenario$K))

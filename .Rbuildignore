@@ -1,5 +1,6 @@
 ^AsianOptPI\.Rproj$
 ^\.Rproj\.user$
+^LICENSE$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.github$
@@ -8,3 +9,11 @@
 ^pkgdown$
 ^\.git$
 ^\.gitignore$
+^analysis$
+^Rplots\.pdf$
+^CLAUDE\.md$
+^THEORETICAL_CONNECTION\.md$
+^\.DS_Store$
+^\.RData$
+^\.Rhistory$
+^cran-comments\.md$

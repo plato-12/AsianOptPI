@@ -23,7 +23,7 @@ price_european(
 
 \item{K}{Strike price (must be positive)}
 
-\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\\% rate)}
+\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\% rate)}
 
 \item{u}{Base up factor in CRR model (must be > d)}
 
@@ -52,15 +52,15 @@ hedging activities.
 \details{
 The European option payoff is:
 \itemize{
-\item Call: \eqn{V_n = \max(0, S_n - K)}
-\item Put: \eqn{V_n = \max(0, K - S_n)}
+  \item Call: \eqn{V_n = \max(0, S_n - K)}
+  \item Put: \eqn{V_n = \max(0, K - S_n)}
 }
 
 Price impact modifies the stock dynamics:
 \itemize{
-\item Effective up factor: \eqn{\tilde{u} = u \cdot e^{\lambda v^u}}
-\item Effective down factor: \eqn{\tilde{d} = d \cdot e^{-\lambda v^d}}
-\item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
+  \item Effective up factor: \eqn{\tilde{u} = u \cdot e^{\lambda v^u}}
+  \item Effective down factor: \eqn{\tilde{d} = d \cdot e^{-\lambda v^d}}
+  \item Risk-neutral probability: \eqn{p^{eff} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 
 Unlike path-dependent Asian options, European options only depend on the
@@ -92,5 +92,5 @@ Option pricing: A simplified approach.
 }
 \seealso{
 \code{\link{price_european_call}}, \code{\link{price_european_put}},
-\code{\link{price_geometric_asian}}, \code{\link{compute_p_eff}}
+  \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 }

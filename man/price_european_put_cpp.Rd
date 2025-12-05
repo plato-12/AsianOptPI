@@ -11,7 +11,7 @@ price_european_put_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
 
 \item{K}{Strike price (positive)}
 
-\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\\% rate)}
+\item{r}{Gross risk-free rate per period (e.g., 1.05 for 5\% rate)}
 
 \item{u}{Base up factor in CRR model (e.g., 1.2)}
 
@@ -40,11 +40,9 @@ model with price impact. The pricing formula is:
 where \eqn{S_n(k) = S_0 \tilde{u}^k \tilde{d}^{n-k}} is the stock price after k up moves.
 
 Price impact modifies the up and down factors:
-\itemize{
-\item Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
-\item Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
-\item Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
-}
+- Adjusted up factor: \eqn{\tilde{u} = u \exp(\lambda v^u)}
+- Adjusted down factor: \eqn{\tilde{d} = d \exp(-\lambda v^d)}
+- Adjusted risk-neutral probability: \eqn{p_{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}}
 }
 \examples{
 \dontrun{
