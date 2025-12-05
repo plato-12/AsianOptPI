@@ -23,7 +23,8 @@ check_no_arbitrage(r, u, d, lambda, v_u, v_d)
 Logical: TRUE if condition holds, FALSE otherwise
 }
 \description{
-Verifies that the no-arbitrage condition d̃ < r < ũ holds.
+Verifies that the no-arbitrage condition
+\eqn{\tilde{d} < r < \tilde{u}} holds.
 }
 \examples{
 check_no_arbitrage(r = 1.05, u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)

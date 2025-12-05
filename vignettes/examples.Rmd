@@ -150,10 +150,10 @@ cat("  d_tilde:", round(factors$d_tilde, 4), "\n")
 cat("  p_adj:  ", round(p_adj, 4), "\n\n")
 
 # Verify no-arbitrage
-cat("No-arbitrage check: d̃ < r < ũ\n")
-cat("  d̃ =", round(factors$d_tilde, 4), "\n")
+cat("No-arbitrage check: d_tilde < r < u_tilde\n")
+cat("  d_tilde =", round(factors$d_tilde, 4), "\n")
 cat("  r  =", 1.05, "\n")
-cat("  ũ =", round(factors$u_tilde, 4), "\n")
+cat("  u_tilde =", round(factors$u_tilde, 4), "\n")
 cat("  Valid:", check_no_arbitrage(1.05, 1.2, 0.8, 0.1, 1, 1), "\n")
 ```
 

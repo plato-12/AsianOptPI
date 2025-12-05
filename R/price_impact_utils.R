@@ -47,7 +47,8 @@ compute_adjusted_factors <- function(u, d, lambda, v_u, v_d) {
 
 #' Check No-Arbitrage Condition
 #'
-#' Verifies that the no-arbitrage condition d̃ < r < ũ holds.
+#' Verifies that the no-arbitrage condition
+#' \eqn{\tilde{d} < r < \tilde{u}} holds.
 #'
 #' @inheritParams compute_p_adj
 #'
