@@ -1,26 +1,20 @@
 # AsianOptPI: Asian Option Pricing with Price Impact
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/plato-12/AsianOptPI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/plato-12/AsianOptPI/actions/workflows/R-CMD-check.yaml)
-[![CRAN status](https://www.r-pkg.org/badges/version/AsianOptPI)](https://CRAN.R-project.org/package=AsianOptPI)
+
+[![R-CMD-check](https://github.com/plato-12/AsianOptPI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/plato-12/AsianOptPI/actions/workflows/R-CMD-check.yaml) [![CRAN status](https://www.r-pkg.org/badges/version/AsianOptPI)](https://CRAN.R-project.org/package=AsianOptPI)
+
 <!-- badges: end -->
 
 ## Overview
 
 AsianOptPI implements binomial tree pricing for Asian options incorporating market price impact from hedging activities. The package extends the Cox-Ross-Rubinstein (CRR) binomial model to account for price movements caused by large hedging trades.
 
-**Key Features:**
-- Exact geometric Asian option pricing via path enumeration (n ≤ 20)
-- Monte Carlo simulation for large time steps (n > 20)
-- Automatic method selection for optimal performance
-- Arithmetic Asian option bounds using Jensen's inequality
-- Price impact modeling for hedging-induced price changes
-- Comprehensive input validation and no-arbitrage checks
-- Efficient C++ implementation via Rcpp
+**Key Features:** - Exact geometric Asian option pricing via path enumeration (n ≤ 20) - Monte Carlo simulation for large time steps (n \> 20) - Automatic method selection for optimal performance - Arithmetic Asian option bounds using Jensen's inequality - Price impact modeling for hedging-induced price changes - Comprehensive input validation and no-arbitrage checks - Efficient C++ implementation via Rcpp
 
 ## Installation
 
-```r
+``` r
 # Install from CRAN
 install.packages("AsianOptPI")
 
@@ -33,7 +27,7 @@ devtools::install_github("plato-12/AsianOptPI")
 
 ### Geometric Asian Option Pricing
 
-```r
+``` r
 library(AsianOptPI)
 
 # Price a geometric Asian call option with price impact
@@ -54,7 +48,7 @@ print(price)
 
 ### Arithmetic Asian Option Bounds
 
-```r
+``` r
 # Compute bounds for arithmetic Asian options
 bounds <- arithmetic_asian_bounds(
   S0 = 100, K = 100, r = 1.05,
@@ -71,7 +65,7 @@ print(bounds)
 
 ### Monte Carlo for Large n
 
-```r
+``` r
 # For n > 20, Monte Carlo is automatically used
 result <- price_geometric_asian(
   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
@@ -100,37 +94,34 @@ The package models hedging-induced price changes:
 
 $$\Delta S = \lambda \cdot v \cdot \text{sign}(\text{trade})$$
 
-This modifies the binomial tree dynamics:
-- **Adjusted up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$
-- **Adjusted down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$
-- **Risk-neutral probability**: $p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
+This modifies the binomial tree dynamics: - **Adjusted up factor**: $\tilde{u} = u \cdot e^{\lambda v^u}$ - **Adjusted down factor**: $\tilde{d} = d \cdot e^{-\lambda v^d}$ - **Risk-neutral probability**: $p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$
 
 The no-arbitrage condition $\tilde{d} < r < \tilde{u}$ is automatically validated.
 
 ## Computational Methods
 
-| Method        | Time Steps | Complexity | Speed      | Accuracy  |
-|---------------|------------|------------|------------|-----------|
-| Exact         | n ≤ 20     | O(2^n)     | Fast       | Exact     |
-| Monte Carlo   | n > 20     | O(M·n)     | Very fast  | ±0.5%*    |
+| Method      | Time Steps | Complexity | Speed     | Accuracy |
+|-------------|------------|------------|-----------|----------|
+| Exact       | n ≤ 20     | O(2\^n)    | Fast      | Exact    |
+| Monte Carlo | n \> 20    | O(M·n)     | Very fast | ±0.5%\*  |
 
-*With default 100,000 simulations
+\*With default 100,000 simulations
 
 The package automatically selects the optimal method based on n.
 
 ## Main Functions
 
-- `price_geometric_asian()`: Price geometric Asian options (calls/puts)
-- `price_geometric_asian_mc()`: Monte Carlo pricing with error estimates
-- `arithmetic_asian_bounds()`: Bounds for arithmetic Asian options
-- `compute_p_adj()`: Compute adjusted risk-neutral probability
-- `check_no_arbitrage()`: Validate no-arbitrage conditions
+-   `price_geometric_asian()`: Price geometric Asian options (calls/puts)
+-   `price_geometric_asian_mc()`: Monte Carlo pricing with error estimates
+-   `arithmetic_asian_bounds()`: Bounds for arithmetic Asian options
+-   `compute_p_adj()`: Compute adjusted risk-neutral probability
+-   `check_no_arbitrage()`: Validate no-arbitrage conditions
 
 ## Examples
 
 ### Sensitivity Analysis
 
-```r
+``` r
 # Effect of price impact on option value
 lambdas <- seq(0, 0.5, by = 0.05)
 prices <- sapply(lambdas, function(lam) {
@@ -144,7 +135,7 @@ plot(lambdas, prices, type = "b",
 
 ### Comparing Methods
 
-```r
+``` r
 # Small n: exact method
 exact <- price_geometric_asian(
   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
@@ -162,13 +153,9 @@ mc <- price_geometric_asian(
 
 ## Validation
 
-All inputs are validated automatically:
-- Positivity: S0, K, r, u, d > 0
-- Ordering: u > d
-- No-arbitrage: $\tilde{d} < r < \tilde{u}$
-- Probability: $p^{adj} \in [0,1]$
+All inputs are validated automatically: - Positivity: S0, K, r, u, d \> 0 - Ordering: u \> d - No-arbitrage: $\tilde{d} < r < \tilde{u}$ - Probability: $p^{adj} \in [0,1]$
 
-```r
+``` r
 # Check no-arbitrage condition
 check_no_arbitrage(
   r = 1.05, u = 1.2, d = 0.8,
@@ -181,7 +168,7 @@ check_no_arbitrage(
 
 Two comprehensive vignettes are available:
 
-```r
+``` r
 # Theoretical foundation
 vignette("theory", package = "AsianOptPI")
 
@@ -191,29 +178,20 @@ vignette("examples", package = "AsianOptPI")
 
 ## References
 
-**Binomial Model:**
-Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing: A simplified approach. *Journal of Financial Economics*, 7(3), 229-263. [doi:10.1016/0304-405X(79)90015-1](https://doi.org/10.1016/0304-405X(79)90015-1)
-
-**Bounds Theory:**
-Budimir, I., Dragomir, S. S., & Pečarić, J. (2000). Further reverse results for Jensen's discrete inequality. *Journal of Inequalities in Pure and Applied Mathematics*, 2(1).
-
-**Monte Carlo Methods:**
-Glasserman, P. (2003). *Monte Carlo Methods in Financial Engineering*. Springer. [doi:10.1007/978-0-387-21617-1](https://doi.org/10.1007/978-0-387-21617-1)
+**Binomial Model:** Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing: A simplified approach. *Journal of Financial Economics*, 7(3), 229-263. [doi:10.1016/0304-405X(79)90015-1](https://doi.org/10.1016/0304-405X(79)90015-1)
 
 ## Package Conventions
 
-**Important**: This package uses **gross rates** (multiplicative), not net rates:
-- Correct: `r = 1.05` for 5% rate
-- Incorrect: `r = 0.05`
+**Important**: This package uses **gross rates** (multiplicative), not net rates: - Correct: `r = 1.05` for 5% rate - Incorrect: `r = 0.05`
 
 This convention applies to the risk-free rate `r` parameter in all functions.
 
 ## Getting Help
 
-- Package documentation: `?AsianOptPI`
-- Function help: `?price_geometric_asian`
-- Report issues: [GitHub Issues](https://github.com/plato-12/AsianOptPI/issues)
+-   Package documentation: `?AsianOptPI`
+-   Function help: `?price_geometric_asian`
+-   Report issues: [GitHub Issues](https://github.com/plato-12/AsianOptPI/issues)
 
 ## License
 
-GPL (>= 2)
+GPL (\>= 2)
