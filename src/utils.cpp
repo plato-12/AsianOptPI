@@ -6,14 +6,11 @@ AdjustedFactors compute_adjusted_factors(
 ) {
     AdjustedFactors factors;
 
-    // Compute adjusted up and down factors
     factors.u_tilde = u * std::exp(lambda * v_u);
     factors.d_tilde = d * std::exp(-lambda * v_d);
 
-    // Compute adjusted risk-neutral probability
     factors.p_adj = (r - factors.d_tilde) / (factors.u_tilde - factors.d_tilde);
 
-    // Validation (should be done in R wrapper, but double-check)
     if (factors.p_adj < 0.0 || factors.p_adj > 1.0) {
         Rcpp::stop("Invalid risk-neutral probability: p_adj must be in [0,1]");
     }
@@ -61,18 +58,16 @@ std::vector<double> generate_price_path(
 
     prices[0] = S0;
 
-    // Build cumulative path
     int n_ups = 0;
     int n_downs = 0;
 
     for (int i = 0; i < n; ++i) {
-        if (path[i] == 1) {  // Up move
+        if (path[i] == 1) {
             n_ups++;
-        } else {  // Down move
+        } else {
             n_downs++;
         }
 
-        // Stock price at time i+1
         prices[i + 1] = S0 * std::pow(u_tilde, n_ups) * std::pow(d_tilde, n_downs);
     }
 
@@ -88,13 +83,10 @@ double binomial_coefficient(int n, int k) {
         return 1.0;
     }
 
-    // Use symmetry property: C(n,k) = C(n, n-k)
     if (k > n - k) {
         k = n - k;
     }
 
-    // Compute using multiplicative formula for numerical stability
-    // C(n,k) = n * (n-1) * ... * (n-k+1) / (k * (k-1) * ... * 1)
     double result = 1.0;
     for (int i = 0; i < k; ++i) {
         result *= (n - i);

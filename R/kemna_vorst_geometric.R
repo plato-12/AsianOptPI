@@ -81,7 +81,7 @@
 #' @export
 price_kemna_vorst_geometric <- function(S0, K, r, sigma, T0, T,
                                          option_type = "call") {
-  # Input validation
+
   if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
     stop("S0 must be a positive number")
   }
@@ -102,13 +102,9 @@ price_kemna_vorst_geometric <- function(S0, K, r, sigma, T0, T,
   }
   option_type <- match.arg(option_type, c("call", "put"))
 
-  # Time to maturity from start of averaging
   tau <- T - T0
 
-  # Handle zero volatility case
   if (sigma == 0) {
-    # With zero volatility, S(t) = S0 * exp(r*t)
-    # Geometric average: G = S0 * exp(r * tau/2)
     G_T <- S0 * exp(r * tau / 2)
     if (option_type == "call") {
       return(max(0, G_T - K) * exp(-r * tau))
@@ -117,22 +113,16 @@ price_kemna_vorst_geometric <- function(S0, K, r, sigma, T0, T,
     }
   }
 
-  # Adjusted parameters for geometric average
   sigma_G <- sigma / sqrt(3)
   d_star <- 0.5 * (r - sigma^2 / 6) * tau
 
-  # Calculate d parameter
   d <- (log(S0 / K) + 0.5 * (r + sigma^2 / 6) * tau) / (sigma * sqrt(tau / 3))
 
-  # Calculate d2
   d2 <- d - sigma_G * sqrt(tau)
 
-  # Option price using cumulative normal distribution
   if (option_type == "call") {
     price <- exp(d_star) * S0 * pnorm(d) - K * pnorm(d2)
   } else {
-    # Put-call transformation for geometric Asian
-    # Put = Call - S0*exp(d_star) + K
     price <- K * pnorm(-d2) - exp(d_star) * S0 * pnorm(-d)
   }
 
@@ -179,7 +169,7 @@ price_kemna_vorst_geometric <- function(S0, K, r, sigma, T0, T,
 #' @export
 price_kemna_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
                                                    option_type = "call") {
-  # Input validation
+
   if (!is.numeric(n) || length(n) != 1 || n < 1 || n != as.integer(n)) {
     stop("n must be a positive integer")
   }
@@ -190,20 +180,14 @@ price_kemna_vorst_geometric_binomial <- function(S0, K, r, u, d, n,
     stop("d must be less than 1 and less than u")
   }
 
-  # Convert gross rate to continuously compounded rate
   r_continuous <- log(r)
 
-  # Time step
   dt <- 1 / n
 
-  # Estimate volatility from binomial parameters
-  # Using the relationship: u = exp(sigma * sqrt(dt)), d = exp(-sigma * sqrt(dt))
   sigma <- log(u / d) / (2 * sqrt(dt))
 
-  # Set T0 = 0, T = 1 (n periods with dt = 1/n gives total time 1)
   T0 <- 0
   T <- 1
 
-  # Call the continuous version
   price_kemna_vorst_geometric(S0, K, r_continuous, sigma, T0, T, option_type)
 }

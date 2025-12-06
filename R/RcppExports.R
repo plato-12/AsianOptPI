@@ -229,6 +229,67 @@ price_geometric_asian_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, optio
     .Call(`_AsianOptPI_price_geometric_asian_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, option_type)
 }
 
+#' Price Geometric Asian Option using Monte Carlo Simulation
+#'
+#' Computes the price of a geometric Asian option using Monte Carlo simulation.
+#' This method is more efficient for large n (> 20) compared to exact enumeration.
+#'
+#' @param S0 Initial stock price (positive)
+#' @param K Strike price (positive)
+#' @param r Gross risk-free rate per period (e.g., 1.05 for 5\% rate)
+#' @param u Base up factor in CRR model (e.g., 1.2)
+#' @param d Base down factor in CRR model (e.g., 0.8)
+#' @param lambda Price impact coefficient (non-negative)
+#' @param v_u Hedging volume on up move (non-negative)
+#' @param v_d Hedging volume on down move (non-negative)
+#' @param n Number of time steps (positive integer)
+#' @param n_simulations Number of Monte Carlo paths to simulate (default: 100000)
+#' @param option_type Type of option: "call" or "put" (default: "call")
+#' @param seed Random seed for reproducibility (default: -1 for no seed)
+#'
+#' @return A list containing:
+#' \itemize{
+#'   \item price: Estimated option price
+#'   \item std_error: Standard error of the estimate
+#'   \item n_simulations: Number of simulations used
+#' }
+#'
+#' @details
+#' The Monte Carlo method randomly samples price paths according to the
+#' risk-neutral probability p_adj. For each simulated path:
+#' \itemize{
+#'   \item Generate n Bernoulli(p_adj) random draws for up/down moves
+#'   \item Compute the geometric average of prices along the path
+#'   \item Calculate the payoff: max(0, G - K) for calls or max(0, K - G) for puts
+#' }
+#'
+#' The option price is estimated as the mean of discounted payoffs, with
+#' standard error = sd(payoffs) / sqrt(n_simulations).
+#'
+#' Monte Carlo is recommended for n > 20 where exact enumeration becomes
+#' computationally prohibitive (2^n paths).
+#'
+#' @references
+#' Glasserman, P. (2003). Monte Carlo Methods in Financial Engineering.
+#' Springer.
+#'
+#' @examples
+#' \dontrun{
+#' # Price option with n=25 using Monte Carlo
+#' result <- price_geometric_asian_mc_cpp(
+#'   S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+#'   lambda = 0.1, v_u = 1.0, v_d = 1.0, n = 25,
+#'   n_simulations = 100000, option_type = "call", seed = 42
+#' )
+#' print(result$price)
+#' print(result$std_error)
+#' }
+#'
+#' @export
+price_geometric_asian_mc_cpp <- function(S0, K, r, u, d, lambda, v_u, v_d, n, n_simulations = 100000L, option_type = "call", seed = -1L) {
+    .Call(`_AsianOptPI_price_geometric_asian_mc_cpp`, S0, K, r, u, d, lambda, v_u, v_d, n, n_simulations, option_type, seed)
+}
+
 #' Kemna-Vorst Monte Carlo Simulation for Arithmetic Average Asian Option
 #'
 #' Implements the Kemna-Vorst (1990) Monte Carlo method with variance reduction

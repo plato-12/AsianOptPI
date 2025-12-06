@@ -45,7 +45,7 @@ test_that("Kemna-Vorst geometric: put price increases with strike", {
 })
 
 test_that("Kemna-Vorst geometric: zero volatility gives intrinsic value", {
-  # At-the-money with zero volatility
+
   price_call <- price_kemna_vorst_geometric(
     100, 100, 0.05, 0, 0, 1, "call"
   )
@@ -53,7 +53,6 @@ test_that("Kemna-Vorst geometric: zero volatility gives intrinsic value", {
     100, 100, 0.05, 0, 0, 1, "put"
   )
 
-  # With zero vol, geometric average = S0 * exp(r * tau / 2)
   G_T <- 100 * exp(0.05 * 1 / 2)
   expected_call <- max(0, G_T - 100) * exp(-0.05)
   expected_put <- max(0, 100 - G_T) * exp(-0.05)
@@ -63,14 +62,12 @@ test_that("Kemna-Vorst geometric: zero volatility gives intrinsic value", {
 })
 
 test_that("Kemna-Vorst geometric: deep ITM call approaches forward price", {
-  # Very deep in-the-money (K = 50, S0 = 100)
+
   price <- price_kemna_vorst_geometric(
     100, 50, 0.05, 0.2, 0, 1, "call"
   )
 
-  # Should be approximately: G_T - K discounted
-  # G_T ≈ S0 * exp(r * tau / 2) for ATM, higher here
-  expect_true(price > 40)  # Loose bound, but should be substantial
+  expect_true(price > 40)
 })
 
 test_that("Kemna-Vorst geometric: input validation", {
@@ -160,10 +157,8 @@ test_that("Kemna-Vorst arithmetic: control variate reduces variance", {
     use_control_variate = FALSE, return_diagnostics = TRUE, seed = 123
   )
 
-  # Control variate should reduce standard error
   expect_true(result_with$std_error < result_without$std_error)
 
-  # Variance reduction factor should be less than 1
   expect_true(result_with$variance_reduction_factor < 1)
   expect_true(result_with$variance_reduction_factor > 0)
 })
@@ -174,13 +169,10 @@ test_that("Kemna-Vorst arithmetic: correlation is high", {
     return_diagnostics = TRUE, seed = 123
   )
 
-  # Correlation between arithmetic and geometric should be very high
   expect_true(result$correlation > 0.9)
 })
 
 test_that("Kemna-Vorst arithmetic: bounded by geometric", {
-  # Arithmetic average >= geometric average (AM-GM inequality)
-  # So arithmetic call option >= geometric call option
 
   geom_price <- price_kemna_vorst_geometric(
     100, 100, 0.05, 0.2, 0, 1, "call"
@@ -190,7 +182,6 @@ test_that("Kemna-Vorst arithmetic: bounded by geometric", {
     100, 100, 0.05, 0.2, 0, 1, 50, 10000, seed = 123
   )
 
-  # Allow some tolerance due to Monte Carlo error
   expect_true(arith_price >= geom_price - 0.5)
 })
 
@@ -295,13 +286,11 @@ test_that("Kemna-Vorst print and summary methods work", {
     return_diagnostics = TRUE, seed = 123
   )
 
-  # Test print
   expect_output(print(result), "Kemna-Vorst Arithmetic Asian Option")
   expect_output(print(result), "Estimated Price")
   expect_output(print(result), "Standard Error")
   expect_output(print(result), "95% CI")
 
-  # Test summary
   expect_output(summary(result), "Kemna-Vorst Arithmetic Asian Option")
 })
 
@@ -318,23 +307,18 @@ test_that("Kemna-Vorst: reproducibility with seed", {
 })
 
 test_that("Kemna-Vorst: comparison with example from paper", {
-  # Example from Kemna & Vorst (1990)
-  # S0 = 40, K = 40, r = 1.05 (5% gross), sigma = 0.2, T = 88/365 days
-  # Expected geometric price around 1.22 (from paper Table 1)
 
-  # Convert parameters to continuous
   S0 <- 40
   K <- 40
   r_continuous <- log(1.05)
   sigma <- 0.2
   T0 <- 0
-  T <- 88 / 365  # Approximately 0.241 years
+  T <- 88 / 365
 
   geom_price <- price_kemna_vorst_geometric(
     S0, K, r_continuous, sigma, T0, T, "call"
   )
 
-  # Should be approximately 1.2-1.3 based on paper
   expect_true(geom_price > 1.0)
   expect_true(geom_price < 2.0)
 })

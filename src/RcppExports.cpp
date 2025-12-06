@@ -111,6 +111,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// price_geometric_asian_mc_cpp
+Rcpp::List price_geometric_asian_mc_cpp(double S0, double K, double r, double u, double d, double lambda, double v_u, double v_d, int n, int n_simulations, std::string option_type, int seed);
+RcppExport SEXP _AsianOptPI_price_geometric_asian_mc_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP lambdaSEXP, SEXP v_uSEXP, SEXP v_dSEXP, SEXP nSEXP, SEXP n_simulationsSEXP, SEXP option_typeSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type r(rSEXP);
+    Rcpp::traits::input_parameter< double >::type u(uSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type v_u(v_uSEXP);
+    Rcpp::traits::input_parameter< double >::type v_d(v_dSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type n_simulations(n_simulationsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(price_geometric_asian_mc_cpp(S0, K, r, u, d, lambda, v_u, v_d, n, n_simulations, option_type, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
 // price_kemna_vorst_arithmetic_cpp
 List price_kemna_vorst_arithmetic_cpp(double S0, double K, double r, double sigma, double T0, double T, int n, int M, std::string option_type, bool use_control_variate, int seed);
 RcppExport SEXP _AsianOptPI_price_kemna_vorst_arithmetic_cpp(SEXP S0SEXP, SEXP KSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP T0SEXP, SEXP TSEXP, SEXP nSEXP, SEXP MSEXP, SEXP option_typeSEXP, SEXP use_control_variateSEXP, SEXP seedSEXP) {
@@ -159,6 +181,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AsianOptPI_price_european_call_cpp", (DL_FUNC) &_AsianOptPI_price_european_call_cpp, 9},
     {"_AsianOptPI_price_european_put_cpp", (DL_FUNC) &_AsianOptPI_price_european_put_cpp, 9},
     {"_AsianOptPI_price_geometric_asian_cpp", (DL_FUNC) &_AsianOptPI_price_geometric_asian_cpp, 10},
+    {"_AsianOptPI_price_geometric_asian_mc_cpp", (DL_FUNC) &_AsianOptPI_price_geometric_asian_mc_cpp, 12},
     {"_AsianOptPI_price_kemna_vorst_arithmetic_cpp", (DL_FUNC) &_AsianOptPI_price_kemna_vorst_arithmetic_cpp, 11},
     {"_AsianOptPI_price_kemna_vorst_arithmetic_binomial_cpp", (DL_FUNC) &_AsianOptPI_price_kemna_vorst_arithmetic_binomial_cpp, 10},
     {NULL, NULL, 0}

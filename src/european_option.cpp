@@ -55,33 +55,24 @@ double price_european_call_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute adjusted factors and risk-neutral probability
     AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
-    // Discount factor
     double discount = std::pow(r, -n);
 
-    // Sum of discounted expected payoffs
     double option_value = 0.0;
 
-    // Iterate over all possible terminal states (0 to n up moves)
     for (int k = 0; k <= n; ++k) {
-        // Terminal stock price after k up moves and (n-k) down moves
         double S_n = S0 * std::pow(factors.u_tilde, k) * std::pow(factors.d_tilde, n - k);
 
-        // Call payoff at terminal node
         double payoff = std::max(0.0, S_n - K);
 
-        // Binomial probability of reaching this state
         double binom_coeff = binomial_coefficient(n, k);
         double prob = binom_coeff * std::pow(factors.p_adj, k) *
                      std::pow(1.0 - factors.p_adj, n - k);
 
-        // Add to option value
         option_value += prob * payoff;
     }
 
-    // Apply discounting
     option_value *= discount;
 
     return option_value;
@@ -136,33 +127,24 @@ double price_european_put_cpp(
     double S0, double K, double r, double u, double d,
     double lambda, double v_u, double v_d, int n
 ) {
-    // Compute adjusted factors and risk-neutral probability
     AdjustedFactors factors = compute_adjusted_factors(r, u, d, lambda, v_u, v_d);
 
-    // Discount factor
     double discount = std::pow(r, -n);
 
-    // Sum of discounted expected payoffs
     double option_value = 0.0;
 
-    // Iterate over all possible terminal states (0 to n up moves)
     for (int k = 0; k <= n; ++k) {
-        // Terminal stock price after k up moves and (n-k) down moves
         double S_n = S0 * std::pow(factors.u_tilde, k) * std::pow(factors.d_tilde, n - k);
 
-        // Put payoff at terminal node
         double payoff = std::max(0.0, K - S_n);
 
-        // Binomial probability of reaching this state
         double binom_coeff = binomial_coefficient(n, k);
         double prob = binom_coeff * std::pow(factors.p_adj, k) *
                      std::pow(1.0 - factors.p_adj, n - k);
 
-        // Add to option value
         option_value += prob * payoff;
     }
 
-    // Apply discounting
     option_value *= discount;
 
     return option_value;

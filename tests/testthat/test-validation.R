@@ -1,5 +1,5 @@
 test_that("Input validation catches invalid parameters", {
-  # Negative prices
+
   expect_error(
     price_geometric_asian(-100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3),
     "S0 must be positive"
@@ -10,7 +10,6 @@ test_that("Input validation catches invalid parameters", {
     "K must be positive"
   )
 
-  # Invalid rate (negative or zero)
   expect_error(
     price_geometric_asian(100, 100, -1, 1.2, 0.8, 0.1, 1, 1, 3),
     "r must be positive"
@@ -21,7 +20,6 @@ test_that("Input validation catches invalid parameters", {
     "r must be positive"
   )
 
-  # Invalid factors
   expect_error(
     price_geometric_asian(100, 100, 1.05, -1.2, 0.8, 0.1, 1, 1, 3),
     "u must be positive"
@@ -32,7 +30,6 @@ test_that("Input validation catches invalid parameters", {
     "d must be positive"
   )
 
-  # Invalid factor ordering
   expect_error(
     price_geometric_asian(100, 100, 1.05, 0.8, 1.2, 0.1, 1, 1, 3),
     "Up factor u must be greater than down factor d"
@@ -43,13 +40,11 @@ test_that("Input validation catches invalid parameters", {
     "Up factor u must be greater than down factor d"
   )
 
-  # Negative lambda
   expect_error(
     price_geometric_asian(100, 100, 1.05, 1.2, 0.8, -0.1, 1, 1, 3),
     "lambda must be non-negative"
   )
 
-  # Negative volumes
   expect_error(
     price_geometric_asian(100, 100, 1.05, 1.2, 0.8, 0.1, -1, 1, 3),
     "v_u must be non-negative"
@@ -60,7 +55,6 @@ test_that("Input validation catches invalid parameters", {
     "v_d must be non-negative"
   )
 
-  # Non-integer n
   expect_error(
     price_geometric_asian(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3.5),
     "n must be a positive integer"
@@ -78,13 +72,12 @@ test_that("Input validation catches invalid parameters", {
 })
 
 test_that("No-arbitrage violation is detected", {
-  # r too high (r >= u_tilde)
+
   expect_error(
     price_geometric_asian(100, 100, 2.0, 1.2, 0.8, 0.1, 1, 1, 3),
     "No-arbitrage condition violated.*r.*>=.*u_tilde"
   )
 
-  # r too low (d_tilde >= r)
   expect_error(
     price_geometric_asian(100, 100, 0.5, 1.2, 0.8, 0.1, 1, 1, 3),
     "No-arbitrage condition violated.*d_tilde.*>=.*r"
@@ -102,7 +95,6 @@ test_that("Warning issued for large n", {
     "2\\^25.*(33554432|3\\.355.*e\\+07)"
   )
 
-  # No warning for n <= 20
   expect_warning(
     price_geometric_asian(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 20),
     NA
@@ -110,8 +102,6 @@ test_that("Warning issued for large n", {
 })
 
 test_that("Validation can be disabled", {
-  # With validation=FALSE, no errors should occur for parameter checks
-  # (but C++ may still error on internal issues)
   result <- price_geometric_asian(
     100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
     validate = FALSE
@@ -121,7 +111,7 @@ test_that("Validation can be disabled", {
 })
 
 test_that("Arithmetic bounds validation works", {
-  # Test same validation for arithmetic bounds
+
   expect_error(
     arithmetic_asian_bounds(-100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3),
     "S0 must be positive"
@@ -144,19 +134,17 @@ test_that("Arithmetic bounds validation works", {
 })
 
 test_that("Edge cases in validation", {
-  # Very small positive values should work
+
   result <- price_geometric_asian(
     0.01, 0.01, 1.01, 1.1, 0.9, 0.01, 0.1, 0.1, 2
   )
   expect_true(is.numeric(result))
 
-  # Zero price impact should work
   result <- price_geometric_asian(
     100, 100, 1.05, 1.2, 0.8, 0, 0, 0, 3
   )
   expect_true(is.numeric(result))
 
-  # n = 1 should work
   result <- price_geometric_asian(
     100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 1
   )

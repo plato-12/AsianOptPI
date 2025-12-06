@@ -110,15 +110,12 @@ arithmetic_asian_bounds <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                      max_sample_size = 100000,
                                      sample_fraction = 0.1,
                                      validate = TRUE) {
-  # Input validation
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
-  # Validate option_type
   option_type <- match.arg(option_type, c("call", "put"))
 
-  # Validate additional parameters
   if (!is.logical(compute_path_specific)) {
     stop("compute_path_specific must be TRUE or FALSE")
   }
@@ -131,16 +128,13 @@ arithmetic_asian_bounds <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
     stop("sample_fraction must be between 0 and 1")
   }
 
-  # Call C++ implementation
   result <- arithmetic_asian_bounds_extended_cpp(
     S0, K, r, u, d, lambda, v_u, v_d, n,
     compute_path_specific, max_sample_size, sample_fraction, option_type
   )
 
-  # Add backward compatibility: "upper_bound" = global bound
   result$upper_bound <- result$upper_bound_global
 
-  # Add class for pretty printing
   class(result) <- c("arithmetic_bounds", "list")
 
   return(result)

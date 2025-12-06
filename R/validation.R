@@ -14,7 +14,6 @@
 #' @keywords internal
 validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
 
-  # Check positivity
   if (S0 <= 0) stop("S0 must be positive")
   if (K <= 0) stop("K must be positive")
   if (r <= 0) stop("r must be positive (use gross rate, e.g., 1.05)")
@@ -24,21 +23,17 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
   if (v_u < 0) stop("v_u must be non-negative")
   if (v_d < 0) stop("v_d must be non-negative")
 
-  # Check integer constraint
   if (!is.numeric(n) || n != as.integer(n) || n <= 0) {
     stop("n must be a positive integer")
   }
 
-  # Check ordering: u > d
   if (u <= d) {
     stop("Up factor u must be greater than down factor d")
   }
 
-  # Compute adjusted factors
   u_tilde <- u * exp(lambda * v_u)
   d_tilde <- d * exp(-lambda * v_d)
 
-  # Check no-arbitrage condition
   if (d_tilde >= r) {
     stop(sprintf(
       "No-arbitrage condition violated: d_tilde (%.4f) >= r (%.4f). Need d_tilde < r.",
@@ -53,7 +48,6 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     ))
   }
 
-  # Compute and check risk-neutral probability
   p_adj <- (r - d_tilde) / (u_tilde - d_tilde)
 
   if (p_adj < 0 || p_adj > 1) {
@@ -63,10 +57,7 @@ validate_inputs <- function(S0, K, r, u, d, lambda, v_u, v_d, n) {
     ))
   }
 
-  # Warning for computational complexity
-  # Note: This warning is only relevant for path-dependent options (Asian)
   if (n > 20) {
-    # Scientific notation for large numbers to avoid overflow
     num_paths <- 2^n
     if (n > 30) {
       warning(sprintf(

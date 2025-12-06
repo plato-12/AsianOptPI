@@ -137,7 +137,7 @@ price_kemna_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
                                           use_control_variate = TRUE,
                                           seed = NULL,
                                           return_diagnostics = FALSE) {
-  # Input validation
+
   if (!is.numeric(S0) || length(S0) != 1 || S0 <= 0) {
     stop("S0 must be a positive number")
   }
@@ -170,16 +170,13 @@ price_kemna_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
     stop("return_diagnostics must be TRUE or FALSE")
   }
 
-  # Set seed if provided
   seed_value <- if (is.null(seed)) 0L else as.integer(seed)
 
-  # Warn if M is small
   if (M < 1000) {
     warning("M = ", M, " is very small. Results may be inaccurate. ",
             "Consider M >= 10000 for reliable estimates.")
   }
 
-  # Call C++ implementation
   result <- price_kemna_vorst_arithmetic_cpp(
     S0 = S0, K = K, r = r, sigma = sigma,
     T0 = T0, T = T, n = as.integer(n), M = as.integer(M),
@@ -188,10 +185,8 @@ price_kemna_vorst_arithmetic <- function(S0, K, r, sigma, T0, T, n, M = 10000,
     seed = seed_value
   )
 
-  # Add class for pretty printing
   class(result) <- c("kemna_vorst_arithmetic", "list")
 
-  # Return result
   if (return_diagnostics) {
     return(result)
   } else {
@@ -252,7 +247,7 @@ price_kemna_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
                                                     use_control_variate = TRUE,
                                                     seed = NULL,
                                                     return_diagnostics = FALSE) {
-  # Input validation for binomial-specific parameters
+
   if (!is.numeric(u) || length(u) != 1 || u <= 1) {
     stop("u must be greater than 1")
   }
@@ -260,20 +255,15 @@ price_kemna_vorst_arithmetic_binomial <- function(S0, K, r, u, d, n, M = 10000,
     stop("d must be less than 1 and less than u")
   }
 
-  # Convert gross rate to continuously compounded rate
   r_continuous <- log(r)
 
-  # Time step
   dt <- 1 / n
 
-  # Estimate volatility from binomial parameters
   sigma <- log(u / d) / (2 * sqrt(dt))
 
-  # Set T0 = 0, T = 1
   T0 <- 0
   T <- 1
 
-  # Call the main function
   price_kemna_vorst_arithmetic(
     S0 = S0, K = K, r = r_continuous, sigma = sigma,
     T0 = T0, T = T, n = n, M = M,

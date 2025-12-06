@@ -63,12 +63,11 @@
 #' @seealso \code{\link{price_european_put}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 price_european_call <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                  validate = TRUE) {
-  # Input validation
+
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
-  # Call C++ implementation
   result <- price_european_call_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
 
   return(result)
@@ -143,12 +142,11 @@ price_european_call <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
 #' @seealso \code{\link{price_european_call}}, \code{\link{price_geometric_asian}}, \code{\link{compute_p_adj}}
 price_european_put <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                                 validate = TRUE) {
-  # Input validation
+
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
-  # Call C++ implementation
   result <- price_european_put_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
 
   return(result)
@@ -220,15 +218,12 @@ price_european_put <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
 price_european <- function(S0, K, r, u, d, lambda, v_u, v_d, n,
                            option_type = "call",
                            validate = TRUE) {
-  # Input validation
   if (validate) {
     validate_inputs(S0, K, r, u, d, lambda, v_u, v_d, n)
   }
 
-  # Validate option_type
   option_type <- match.arg(option_type, c("call", "put"))
 
-  # Call appropriate C++ implementation
   if (option_type == "call") {
     result <- price_european_call_cpp(S0, K, r, u, d, lambda, v_u, v_d, n)
   } else {

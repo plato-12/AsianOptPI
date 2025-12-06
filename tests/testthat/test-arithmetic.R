@@ -15,7 +15,6 @@ test_that("Arithmetic bounds are non-negative", {
 test_that("Rho star is at least 1", {
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # By theory, rho_star >= 1
   expect_true(bounds$rho_star >= 1)
 })
 
@@ -31,7 +30,6 @@ test_that("Bounds object has correct structure", {
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
   expect_type(bounds, "list")
-  # Check that all required fields are present
   expect_true("lower_bound" %in% names(bounds))
   expect_true("upper_bound" %in% names(bounds))
   expect_true("upper_bound_global" %in% names(bounds))
@@ -68,15 +66,12 @@ test_that("Print method works for arithmetic_bounds", {
 })
 
 test_that("Bounds tighten with lower volatility", {
-  # Higher volatility
   bounds_high <- arithmetic_asian_bounds(100, 100, 1.05, 1.3, 0.7, 0.1, 1, 1, 3)
   spread_high <- bounds_high$upper_bound - bounds_high$lower_bound
 
-  # Lower volatility
   bounds_low <- arithmetic_asian_bounds(100, 100, 1.05, 1.1, 0.9, 0.1, 1, 1, 3)
   spread_low <- bounds_low$upper_bound - bounds_low$lower_bound
 
-  # Lower volatility should have tighter bounds
   expect_true(spread_low < spread_high)
 })
 
@@ -89,26 +84,22 @@ test_that("Expected geometric average is positive", {
 })
 
 test_that("Bounds scale with initial stock price", {
-  # S0 = 100
+
   bounds_100 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # S0 = 200 (double)
   bounds_200 <- arithmetic_asian_bounds(200, 200, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # Bounds should roughly scale (not exactly linear for Asian options)
   expect_true(bounds_200$lower_bound > bounds_100$lower_bound)
   expect_true(bounds_200$upper_bound > bounds_100$upper_bound)
   expect_true(bounds_200$EQ_G > bounds_100$EQ_G)
 })
 
 test_that("ITM options have higher bounds", {
-  # ITM (K < S0)
+
   bounds_itm <- arithmetic_asian_bounds(100, 80, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # ATM (K = S0)
   bounds_atm <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # OTM (K > S0)
   bounds_otm <- arithmetic_asian_bounds(100, 120, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
   expect_true(bounds_itm$lower_bound > bounds_atm$lower_bound)
@@ -116,13 +107,11 @@ test_that("ITM options have higher bounds", {
 })
 
 test_that("Rho star increases with volatility spread", {
-  # Low volatility
+
   bounds_low <- arithmetic_asian_bounds(100, 100, 1.05, 1.1, 0.9, 0.1, 1, 1, 3)
 
-  # High volatility
   bounds_high <- arithmetic_asian_bounds(100, 100, 1.05, 1.3, 0.7, 0.1, 1, 1, 3)
 
-  # Higher volatility spread should increase rho_star
   expect_true(bounds_high$rho_star > bounds_low$rho_star)
 })
 
@@ -146,13 +135,10 @@ test_that("Bounds work for various n values", {
 })
 
 test_that("Price impact increases bounds", {
-  # No price impact
   bounds_no <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0, 0, 0, 3)
 
-  # With price impact
   bounds_yes <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3)
 
-  # Price impact should increase lower bound (and typically upper bound)
   expect_true(bounds_yes$lower_bound >= bounds_no$lower_bound)
 })
 
@@ -174,10 +160,6 @@ test_that("Results are reproducible", {
   expect_equal(bounds1$rho_star, bounds2$rho_star)
   expect_equal(bounds1$EQ_G, bounds2$EQ_G)
 })
-
-# ============================================================================
-# PUT OPTION TESTS
-# ============================================================================
 
 test_that("Put option bounds satisfy inequality", {
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
@@ -206,7 +188,6 @@ test_that("Put lower bound equals geometric put price", {
 })
 
 test_that("Put bounds increase with strike", {
-  # Higher strike -> higher put value
   bounds_K90 <- arithmetic_asian_bounds(100, 90, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                          option_type = "put")
   bounds_K100 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
@@ -219,7 +200,7 @@ test_that("Put bounds increase with strike", {
 })
 
 test_that("Put bounds decrease with initial stock price", {
-  # Higher S0 -> lower put value
+
   bounds_S90 <- arithmetic_asian_bounds(90, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                          option_type = "put")
   bounds_S100 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
@@ -232,7 +213,7 @@ test_that("Put bounds decrease with initial stock price", {
 })
 
 test_that("Deep ITM put has high bounds", {
-  # Very high strike -> deep in-the-money for put
+
   bounds <- arithmetic_asian_bounds(100, 500, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                      option_type = "put")
 
@@ -241,7 +222,7 @@ test_that("Deep ITM put has high bounds", {
 })
 
 test_that("Deep OTM put has low bounds", {
-  # Very low strike -> deep out-of-the-money for put
+
   bounds <- arithmetic_asian_bounds(100, 1, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                      option_type = "put")
 
@@ -253,7 +234,6 @@ test_that("Put rho star is at least 1", {
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                      option_type = "put")
 
-  # By theory, rho_star >= 1 (same for calls and puts)
   expect_true(bounds$rho_star >= 1)
 })
 
@@ -301,7 +281,7 @@ test_that("Put results are reproducible", {
 })
 
 test_that("option_type parameter validation works", {
-  # Valid option types
+
   expect_no_error(
     arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                             option_type = "call")
@@ -311,7 +291,6 @@ test_that("option_type parameter validation works", {
                             option_type = "put")
   )
 
-  # Invalid option type should error
   expect_error(
     arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                             option_type = "invalid"),
@@ -320,23 +299,17 @@ test_that("option_type parameter validation works", {
 })
 
 test_that("Call and put bounds use same rho_star and EQ_G", {
-  # These parameters should be independent of option type
+
   bounds_call <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                           option_type = "call")
   bounds_put <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                                          option_type = "put")
 
-  # rho_star and EQ_G should be the same for both
   expect_equal(bounds_call$rho_star, bounds_put$rho_star)
   expect_equal(bounds_call$EQ_G, bounds_put$EQ_G)
 
-  # But bounds should differ
   expect_false(isTRUE(all.equal(bounds_call$lower_bound, bounds_put$lower_bound)))
 })
-
-# ============================================================================
-# PATH-SPECIFIC UPPER BOUND TESTS
-# ============================================================================
 
 test_that("Path-specific bound is computed when requested", {
   bounds_ps <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
@@ -360,10 +333,8 @@ test_that("Path-specific bound satisfies ordering: lower <= path-specific <= glo
                                      compute_path_specific = TRUE,
                                      sample_fraction = 1.0)
 
-  # Lower bound <= path-specific bound
   expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific)
 
-  # Path-specific bound <= global bound (path-specific should be tighter)
   expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global)
 })
 
@@ -372,7 +343,6 @@ test_that("Path-specific bound is tighter than global bound", {
                                      compute_path_specific = TRUE,
                                      sample_fraction = 1.0)
 
-  # Path-specific spread should be smaller than global spread
   spread_ps <- bounds$upper_bound_path_specific - bounds$lower_bound
   spread_global <- bounds$upper_bound_global - bounds$lower_bound
 
@@ -380,36 +350,33 @@ test_that("Path-specific bound is tighter than global bound", {
 })
 
 test_that("Path-specific bound with small n uses exact enumeration", {
-  n <- 5  # 2^5 = 32 paths
+  n <- 5
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
                                      compute_path_specific = TRUE,
-                                     sample_fraction = 1.0)  # Enumerate all
+                                     sample_fraction = 1.0)
 
-  # Should enumerate all 2^n paths when sample_fraction = 1.0
   expect_equal(bounds$n_paths_sampled, 2^n)
 })
 
 test_that("Path-specific bound with large n uses sampling", {
-  n <- 10  # 2^10 = 1024 paths
+  n <- 10
   max_sample <- 500
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
                                      compute_path_specific = TRUE,
                                      max_sample_size = max_sample,
-                                     sample_fraction = 1.0)  # Request all but cap at max
+                                     sample_fraction = 1.0)
 
-  # Should be capped at max_sample_size
   expect_equal(bounds$n_paths_sampled, max_sample)
 })
 
 test_that("Path-specific bound respects sample_fraction", {
-  n <- 8  # 2^8 = 256 paths
+  n <- 8
   sample_frac <- 0.5
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, n,
                                      compute_path_specific = TRUE,
                                      sample_fraction = sample_frac,
-                                     max_sample_size = 1000000)  # Large enough not to limit
+                                     max_sample_size = 1000000)
 
-  # Should sample approximately sample_fraction * 2^n paths
   expected_samples <- floor(sample_frac * 2^n)
   expect_equal(bounds$n_paths_sampled, expected_samples)
 })
@@ -422,11 +389,10 @@ test_that("Path-specific bound works for n=1 case", {
   expect_true(!is.na(bounds$upper_bound_path_specific))
   expect_true(bounds$lower_bound <= bounds$upper_bound_path_specific)
   expect_true(bounds$upper_bound_path_specific <= bounds$upper_bound_global)
-  expect_equal(bounds$n_paths_sampled, 2)  # 2^1 = 2 paths
+  expect_equal(bounds$n_paths_sampled, 2)
 })
 
 test_that("Path-specific bound validation: max_sample_size", {
-  # Invalid max_sample_size
   expect_error(
     arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                             compute_path_specific = TRUE,
@@ -443,7 +409,6 @@ test_that("Path-specific bound validation: max_sample_size", {
 })
 
 test_that("Path-specific bound validation: sample_fraction", {
-  # Invalid sample_fraction
   expect_error(
     arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 3,
                             compute_path_specific = TRUE,
@@ -505,21 +470,19 @@ test_that("Path-specific bound is tighter for put options", {
 })
 
 test_that("Path-specific bound tightens with lower volatility", {
-  # High volatility
+
   bounds_high <- arithmetic_asian_bounds(100, 100, 1.05, 1.3, 0.7, 0.1, 1, 1, 5,
                                           compute_path_specific = TRUE,
                                           sample_fraction = 1.0)
   spread_high_ps <- bounds_high$upper_bound_path_specific -
                     bounds_high$lower_bound
 
-  # Low volatility
   bounds_low <- arithmetic_asian_bounds(100, 100, 1.05, 1.1, 0.9, 0.1, 1, 1, 5,
                                          compute_path_specific = TRUE,
                                          sample_fraction = 1.0)
   spread_low_ps <- bounds_low$upper_bound_path_specific -
                    bounds_low$lower_bound
 
-  # Lower volatility should have tighter path-specific bounds
   expect_true(spread_low_ps < spread_high_ps)
 })
 
@@ -531,7 +494,6 @@ test_that("Path-specific bound is non-negative", {
 })
 
 test_that("Path-specific bound is reproducible for exact enumeration", {
-  # Exact enumeration should give deterministic results (no randomness)
   bounds1 <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
                                       compute_path_specific = TRUE,
                                       sample_fraction = 1.0)
@@ -545,17 +507,15 @@ test_that("Path-specific bound is reproducible for exact enumeration", {
 })
 
 test_that("Path-specific bound improvement is significant for high volatility", {
-  # High volatility scenario where path-specific should be tighter
+
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.5, 0.6, 0.1, 1, 1, 5,
                                      compute_path_specific = TRUE,
                                      sample_fraction = 1.0)
 
-  # Calculate improvement: how much path-specific reduces the spread
   improvement <- (bounds$upper_bound_global - bounds$upper_bound_path_specific)
 
-  # Path-specific should improve (tighten) bounds for high volatility
   expect_true(improvement > 0)
-  # And path-specific bound should still be above lower bound
+
   expect_true(bounds$upper_bound_path_specific > bounds$lower_bound)
 })
 
@@ -569,43 +529,39 @@ test_that("Path-specific bound works with no price impact (lambda=0)", {
 })
 
 test_that("Path-specific bound increases with price impact", {
-  # No price impact
+
   bounds_no <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0, 0, 0, 5,
                                         compute_path_specific = TRUE,
                                         sample_fraction = 1.0)
 
-  # With price impact
   bounds_yes <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.2, 1, 1, 5,
                                          compute_path_specific = TRUE,
                                          sample_fraction = 1.0)
 
-  # Price impact should increase bounds (for calls)
   expect_true(bounds_yes$upper_bound_path_specific >=
                 bounds_no$upper_bound_path_specific)
 })
 
 test_that("Path-specific bound varies across moneyness levels", {
-  # Deep ITM
+
   bounds_itm <- arithmetic_asian_bounds(100, 80, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
                                          compute_path_specific = TRUE,
                                          sample_fraction = 1.0)
 
-  # ATM
+
   bounds_atm <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
                                          compute_path_specific = TRUE,
                                          sample_fraction = 1.0)
 
-  # Deep OTM
+
   bounds_otm <- arithmetic_asian_bounds(100, 120, 1.05, 1.2, 0.8, 0.1, 1, 1, 5,
                                          compute_path_specific = TRUE,
                                          sample_fraction = 1.0)
 
-  # All should have valid path-specific bounds
   expect_true(!is.na(bounds_itm$upper_bound_path_specific))
   expect_true(!is.na(bounds_atm$upper_bound_path_specific))
   expect_true(!is.na(bounds_otm$upper_bound_path_specific))
 
-  # ITM should have highest bounds
   expect_true(bounds_itm$upper_bound_path_specific >
                 bounds_otm$upper_bound_path_specific)
 })
@@ -614,15 +570,12 @@ test_that("Path-specific bound structure is correct", {
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
                                      compute_path_specific = TRUE)
 
-  # Check all required fields
   expect_true("upper_bound_path_specific" %in% names(bounds))
   expect_true("n_paths_sampled" %in% names(bounds))
 
-  # Check types
   expect_true(is.numeric(bounds$upper_bound_path_specific))
   expect_true(is.numeric(bounds$n_paths_sampled))
 
-  # Check length
   expect_length(bounds$upper_bound_path_specific, 1)
   expect_length(bounds$n_paths_sampled, 1)
 })
@@ -640,7 +593,6 @@ test_that("Path-specific bound backward compatibility: upper_bound field exists"
   bounds <- arithmetic_asian_bounds(100, 100, 1.05, 1.2, 0.8, 0.1, 1, 1, 4,
                                      compute_path_specific = TRUE)
 
-  # upper_bound should still exist for backward compatibility
   expect_true("upper_bound" %in% names(bounds))
   expect_equal(bounds$upper_bound, bounds$upper_bound_global)
 })

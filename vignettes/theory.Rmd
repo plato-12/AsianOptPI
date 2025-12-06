@@ -4,9 +4,12 @@ author: "Priyanshu Tiwari"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{Theoretical Background: Asian Options with Price Impact}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include = FALSE}
@@ -19,15 +22,16 @@ library(AsianOptPI)
 
 ## Introduction
 
-This vignette provides the mathematical foundation for pricing Asian options
-with price impact using the Cox-Ross-Rubinstein (CRR) binomial model.
+This vignette provides the mathematical foundation for pricing Asian
+options with price impact using the Cox-Ross-Rubinstein (CRR) binomial
+model.
 
 ## The CRR Binomial Model
 
 In the standard CRR model, the stock price evolves on a binomial tree:
 
-- **Up move**: $S \to uS$ with risk-neutral probability $p$
-- **Down move**: $S \to dS$ with probability $1-p$
+-   **Up move**: $S \to uS$ with risk-neutral probability $p$
+-   **Down move**: $S \to dS$ with probability $1-p$
 
 The risk-neutral probability ensures no-arbitrage:
 
@@ -39,15 +43,13 @@ where $r$ is the gross risk-free rate (e.g., $r = 1.05$ for 5%).
 
 ### Hedging-Induced Price Changes
 
-When market makers hedge options, they must buy or sell the underlying stock.
-Large volumes cause price movements:
+When market makers hedge options, they must buy or sell the underlying
+stock. Large volumes cause price movements:
 
 $$\Delta S = \lambda \cdot v \cdot \text{sign}(\text{trade})$$
 
-where:
-- $\lambda$: price impact coefficient
-- $v$: trading volume
-- sign: +1 for buy, -1 for sell
+where: - $\lambda$: price impact coefficient - $v$: trading volume -
+sign: +1 for buy, -1 for sell
 
 ### Modified Stock Dynamics
 
@@ -66,9 +68,8 @@ $$p^{adj} = \frac{r - \tilde{d}}{\tilde{u} - \tilde{d}}$$
 
 ### Fundamental Principle
 
-At any node, we replicate the option using:
-- $\Delta$ shares of stock
-- $B$ units of bonds
+At any node, we replicate the option using: - $\Delta$ shares of stock -
+$B$ units of bonds
 
 **Replication equations**:
 
@@ -123,12 +124,13 @@ price_geometric_asian(
 
 Four paths: UU, UD, DU, DD
 
-- **Path UU**: $G = S_0 \tilde{u}$
-- **Path UD**: $G = S_0 (\tilde{u}^2 \tilde{d})^{1/3}$
-- **Path DU**: $G = S_0 (\tilde{d}^2 \tilde{u})^{1/3}$
-- **Path DD**: $G = S_0 \tilde{d}$
+-   **Path UU**: $G = S_0 \tilde{u}$
+-   **Path UD**: $G = S_0 (\tilde{u}^2 \tilde{d})^{1/3}$
+-   **Path DU**: $G = S_0 (\tilde{d}^2 \tilde{u})^{1/3}$
+-   **Path DD**: $G = S_0 \tilde{d}$
 
-Note: UD and DU have the same terminal price but **different geometric averages**.
+Note: UD and DU have the same terminal price but **different geometric
+averages**.
 
 ## Arithmetic Asian Options
 
@@ -193,19 +195,96 @@ check_no_arbitrage(r = 2.0, u = 1.2, d = 0.8, lambda = 0.1, v_u = 1, v_d = 1)
 
 ## Computational Complexity
 
+### Exact Method: Path Enumeration
+
 Path enumeration scales as $O(2^n)$:
 
-| n  | Paths | Approx. Time |
-|----|-------|--------------|
-| 10 | 1,024 | < 1 ms       |
-| 15 | 32,768| ~10 ms       |
-| 20 | 1,048,576 | ~1 sec   |
-| 25 | 33,554,432 | ~30 sec |
+| n   | Paths      | Approx. Time | Method   |
+|-----|------------|--------------|----------|
+| 10  | 1,024      | \< 1 ms      | Exact    |
+| 15  | 32,768     | \~10 ms      | Exact    |
+| 20  | 1,048,576  | \~10 sec     | Exact    |
+| 25  | 33,554,432 | \~5 min      | Too slow |
 
-**Recommendation**: Use $n \leq 20$ for practical applications.
+**Challenge**: For $n > 20$, exact enumeration becomes impractical.
+
+### Monte Carlo Method: Simulation
+
+For large $n$, we use Monte Carlo simulation:
+
+**Algorithm**:
+
+1.  For $i = 1, \ldots, M$ (simulations):
+
+    -   Generate random path:
+        $\omega^{(i)} \sim \text{Bernoulli}(p^{adj})^n$
+    -   Compute geometric average: $G(\omega^{(i)})$
+    -   Calculate payoff: $\pi^{(i)} = \max(0, G(\omega^{(i)}) - K)$
+
+2.  Estimate price:
+    $\hat{V}_0 = \frac{1}{r^n} \cdot \frac{1}{M} \sum_{i=1}^M \pi^{(i)}$
+
+3.  Compute standard error: $SE = \frac{\sigma_{\pi}}{r^n \sqrt{M}}$
+
+**Performance**:
+
+| n   | Simulations | Time    | Error (95% CI) |
+|-----|-------------|---------|----------------|
+| 25  | 100,000     | \~0.1 s | ± 0.5%         |
+| 50  | 100,000     | \~0.2 s | ± 0.5%         |
+| 100 | 100,000     | \~0.4 s | ± 0.5%         |
+
+**Convergence**: By the Central Limit Theorem, $SE \propto 1/\sqrt{M}$.
+
+### Automatic Method Selection
+
+The package automatically selects the optimal method:
+
+-   **n ≤ 20**: Exact enumeration (fast and exact)
+-   **n \> 20**: Monte Carlo (fast with quantifiable error)
+
+```{r}
+# Auto-selects exact method
+price_small <- price_geometric_asian(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1, n = 10
+)
+cat("n=10 (exact):", price_small, "\n")
+
+# Auto-selects Monte Carlo
+price_large <- price_geometric_asian(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1, n = 30, seed = 42
+)
+cat("n=30 (MC):", price_large, "\n")
+```
+
+### Monte Carlo with Full Output
+
+For detailed analysis, use the direct Monte Carlo function:
+
+```{r}
+mc_result <- price_geometric_asian_mc(
+  S0 = 100, K = 100, r = 1.05, u = 1.2, d = 0.8,
+  lambda = 0.1, v_u = 1, v_d = 1, n = 25,
+  n_simulations = 50000, seed = 123
+)
+
+print(mc_result)
+```
+
+The output includes: - **Price**: Estimated option value - **Std
+Error**: Standard error of the estimate - **95% CI**: Confidence
+interval for the true price - **Simulations**: Number of paths simulated
 
 ## References
 
-Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing: A simplified approach. *Journal of Financial Economics*, 7(3), 229-263.
+Cox, J. C., Ross, S. A., & Rubinstein, M. (1979). Option pricing: A
+simplified approach. *Journal of Financial Economics*, 7(3), 229-263.
 
-Budimir, I., Dragomir, S. S., & Pečarić, J. (2000). Further reverse results for Jensen's discrete inequality and applications in information theory. *Journal of Inequalities in Pure and Applied Mathematics*, 2(1).
+Budimir, I., Dragomir, S. S., & Pečarić, J. (2000). Further reverse
+results for Jensen's discrete inequality and applications in information
+theory. *Journal of Inequalities in Pure and Applied Mathematics*, 2(1).
+
+Glasserman, P. (2003). *Monte Carlo Methods in Financial Engineering*.
+Springer.

@@ -79,23 +79,19 @@ List price_kemna_vorst_arithmetic_cpp(
     bool use_control_variate = true,
     int seed = 0
 ) {
-  // Set random seed if provided
   if (seed != 0) {
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed = base_env["set.seed"];
     set_seed(seed);
   }
 
-  // Time parameters
   double tau = T - T0;
   double dt = tau / n;
   double discount = std::exp(-r * tau);
 
-  // Risk-neutral drift
   double drift = (r - 0.5 * sigma * sigma) * dt;
   double vol_sqrt_dt = sigma * std::sqrt(dt);
 
-  // Calculate analytical geometric average price (control variate)
   double sigma_G = sigma / std::sqrt(3.0);
   double d_star = 0.5 * (r - sigma * sigma / 6.0) * tau;
   double d = (std::log(S0 / K) + 0.5 * (r + sigma * sigma / 6.0) * tau) /
@@ -111,43 +107,34 @@ List price_kemna_vorst_arithmetic_cpp(
                       std::exp(d_star) * S0 * R::pnorm(-d, 0.0, 1.0, 1, 0);
   }
 
-  // Storage for simulation results
   NumericVector arithmetic_payoffs(M);
   NumericVector geometric_payoffs(M);
   NumericVector differences(M);
 
-  // Monte Carlo simulation
   for (int j = 0; j < M; j++) {
-    // Generate price path
     NumericVector S(n + 1);
     S[0] = S0;
 
     double log_S = std::log(S0);
-    double sum_log_S = log_S;  // For geometric average
+    double sum_log_S = log_S;
 
     for (int i = 1; i <= n; i++) {
-      // Generate random normal variable
       double Z = R::rnorm(0.0, 1.0);
 
-      // Update log price
       log_S = log_S + drift + vol_sqrt_dt * Z;
       S[i] = std::exp(log_S);
 
-      // Accumulate for geometric average
       sum_log_S += log_S;
     }
 
-    // Calculate arithmetic average
     double A = 0.0;
     for (int i = 0; i <= n; i++) {
       A += S[i];
     }
     A /= (n + 1);
 
-    // Calculate geometric average
     double G = std::exp(sum_log_S / (n + 1));
 
-    // Calculate payoffs
     double Y, W;
     if (option_type == "call") {
       Y = discount * std::max(0.0, A - K);
@@ -162,11 +149,9 @@ List price_kemna_vorst_arithmetic_cpp(
     differences[j] = Y - W;
   }
 
-  // Calculate statistics
   double mean_diff = Rcpp::mean(differences);
   double std_diff = Rcpp::sd(differences);
 
-  // Enhanced estimate using control variate
   double price_estimate;
   double std_error;
 
@@ -174,19 +159,16 @@ List price_kemna_vorst_arithmetic_cpp(
     price_estimate = geometric_price + mean_diff;
     std_error = std_diff / std::sqrt(M);
   } else {
-    // Standard Monte Carlo (no variance reduction)
     double mean_arith = Rcpp::mean(arithmetic_payoffs);
     double std_arith = Rcpp::sd(arithmetic_payoffs);
     price_estimate = mean_arith;
     std_error = std_arith / std::sqrt(M);
   }
 
-  // 95% confidence interval
   double ci_margin = 1.96 * std_error;
   double lower_ci = price_estimate - ci_margin;
   double upper_ci = price_estimate + ci_margin;
 
-  // Calculate correlation between arithmetic and geometric payoffs
   double correlation = 0.0;
   if (use_control_variate) {
     double mean_Y = Rcpp::mean(arithmetic_payoffs);
@@ -208,14 +190,11 @@ List price_kemna_vorst_arithmetic_cpp(
     }
   }
 
-  // Variance reduction factor
   double variance_reduction_factor = 1.0;
   if (use_control_variate && correlation > 0) {
-    // Var(enhanced) = Var(standard) * (1 - rho^2)
     variance_reduction_factor = 1.0 - correlation * correlation;
   }
 
-  // Return results
   return List::create(
     Named("price") = price_estimate,
     Named("std_error") = std_error,
@@ -257,19 +236,15 @@ List price_kemna_vorst_arithmetic_binomial_cpp(
     bool use_control_variate = true,
     int seed = 0
 ) {
-  // Convert gross rate to continuously compounded rate
   double r_continuous = std::log(r);
 
-  // Time step
   double dt = 1.0 / n;
 
-  // Estimate volatility from binomial parameters
   double sigma = std::log(u / d) / (2.0 * std::sqrt(dt));
 
-  // Call the main function
   return price_kemna_vorst_arithmetic_cpp(
     S0, K, r_continuous, sigma,
-    0.0, 1.0,  // T0 = 0, T = 1
+    0.0, 1.0,
     n, M, option_type, use_control_variate, seed
   );
 }
